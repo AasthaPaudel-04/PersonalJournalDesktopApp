@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36623.8 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersonalJournalDesktopApp", "PersonalJournalDesktopApp\PersonalJournalDesktopApp.csproj", "{8E4CD6AF-2F7B-4D44-B5C6-24411FA2CF1C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8E4CD6AF-2F7B-4D44-B5C6-24411FA2CF1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E4CD6AF-2F7B-4D44-B5C6-24411FA2CF1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E4CD6AF-2F7B-4D44-B5C6-24411FA2CF1C}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{8E4CD6AF-2F7B-4D44-B5C6-24411FA2CF1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E4CD6AF-2F7B-4D44-B5C6-24411FA2CF1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E4CD6AF-2F7B-4D44-B5C6-24411FA2CF1C}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4F00EB10-818B-4785-A217-87B82CEC90C7}
+	EndGlobalSection
+EndGlobal
