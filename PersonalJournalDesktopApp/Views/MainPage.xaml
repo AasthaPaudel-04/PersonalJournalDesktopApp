@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:PersonalJournalDesktopApp.ViewModels"
+             xmlns:models="clr-namespace:PersonalJournalDesktopApp.Models"
+             x:Class="PersonalJournalDesktopApp.Views.MainPage"
+             x:DataType="vm:MainViewModel"
+             BackgroundColor="{DynamicResource PrimaryBackground}">
+    
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- ============== HEADER + THEME TOGGLE ============== -->
+            <Grid ColumnDefinitions="*,Auto">
+                <Label Text="My Journal"
+                       FontSize="32"
+                       FontAttributes="Bold"
+                       TextColor="{DynamicResource PrimaryText}"
+                       VerticalOptions="Center"/>
+
+                <!-- THEME CUSTOMIZATION: Toggle Button -->
+                <Button Grid.Column="1"
+                        Text="🌙"
+                        Command="{Binding ToggleThemeCommand}"
+                        BackgroundColor="{DynamicResource AccentColor}"
+                        TextColor="{DynamicResource PrimaryText}"
+                        WidthRequest="50"
+                        HeightRequest="50"
+                        CornerRadius="25"
+                        FontSize="20"/>
+            </Grid>
+
+            <!-- ============== CALENDAR NAVIGATION ============== -->
+            <Frame BackgroundColor="{DynamicResource SecondaryBackground}"
+                   CornerRadius="15"
+                   Padding="15"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Select a Date"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="{DynamicResource PrimaryText}"/>
+
+                    <!-- CALENDAR NAVIGATION: Date Picker -->
+                    <DatePicker Date="{Binding SelectedDate}"
+                                Format="D"
+                                TextColor="{DynamicResource PrimaryText}"
+                                BackgroundColor="{DynamicResource PrimaryBackground}"
+                                FontSize="16"/>
+
+                    <!-- CALENDAR NAVIGATION: Display Selected Date -->
+                    <Label Text="{Binding SelectedDateDisplay}"
+                           FontSize="14"
+                           TextColor="{DynamicResource SecondaryText}"
+                           HorizontalTextAlignment="Center"/>
+
+                    <!-- JOURNAL ENTRY MANAGEMENT: Create/Edit Button -->
+                    <!-- Button text changes based on HasEntryForSelectedDate -->
+                    <Button Text="{Binding HasEntryForSelectedDate, Converter={StaticResource EntryButtonTextConverter}}"
+                            Command="{Binding CreateOrEditEntryCommand}"
+                            BackgroundColor="{DynamicResource AccentColor}"
+                            TextColor="{DynamicResource PrimaryBackground}"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            CornerRadius="10"
+                            HeightRequest="50"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- ============== RECENT ENTRIES LIST ============== -->
+            <Frame BackgroundColor="{DynamicResource SecondaryBackground}"
+                   CornerRadius="15"
+                   Padding="15"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="Recent Entries"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="{DynamicResource PrimaryText}"
+                               VerticalOptions="Center"/>
+
+                        <!-- Refresh Button -->
+                        <Button Grid.Column="1"
+                                Text="🔄"
+                                Command="{Binding RefreshCommand}"
+                                BackgroundColor="Transparent"
+                                TextColor="{DynamicResource AccentColor}"
+                                FontSize="18"
+                                Padding="0"
+                                WidthRequest="40"/>
+                    </Grid>
+
+                    <!-- JOURNAL ENTRY MANAGEMENT: List of Entries -->
+                    <CollectionView ItemsSource="{Binding RecentEntries}"
+                                    EmptyView="No entries yet. Start writing!">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:JournalEntry">
+                                <Frame BackgroundColor="{DynamicResource PrimaryBackground}"
+                                       CornerRadius="10"
+                                       Padding="12"
+                                       Margin="0,5"
+                                       HasShadow="False">
+                                    <Frame.GestureRecognizers>
+                                        <TapGestureRecognizer 
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MainViewModel}}, Path=ViewEntryCommand}"
+                                            CommandParameter="{Binding .}"/>
+                                    </Frame.GestureRecognizers>
+
+                                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                                        <!-- Entry Title -->
+                                        <Label Grid.Row="0" Grid.Column="0"
+                                               Text="{Binding Title}"
+                                               FontSize="16"
+                                               FontAttributes="Bold"
+                                               TextColor="{DynamicResource PrimaryText}"
+                                               LineBreakMode="TailTruncation"/>
+
+                                        <!-- Entry Date -->
+                                        <Label Grid.Row="0" Grid.Column="1"
+                                               Text="{Binding Date, StringFormat='{0:MMM dd}'}"
+                                               FontSize="12"
+                                               TextColor="{DynamicResource SecondaryText}"
+                                               VerticalOptions="Center"
+                                               Margin="10,0,0,0"/>
+
+                                        <!-- Entry Content Preview -->
+                                        <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                               Text="{Binding Content}"
+                                               FontSize="12"
+                                               TextColor="{DynamicResource SecondaryText}"
+                                               LineBreakMode="TailTruncation"
+                                               MaxLines="2"
+                                               Margin="0,5,0,0"/>
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

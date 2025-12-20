@@ -2,15 +2,44 @@
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:PersonalJournalDesktopApp"
+             xmlns:converters="clr-namespace:PersonalJournalDesktopApp.Converters"
              x:Class="PersonalJournalDesktopApp.App">
     <Application.Resources>
         <ResourceDictionary>
 
-        <!--
-            For information about styling .NET MAUI pages
-            please refer to the documentation:
-            https://go.microsoft.com/fwlink/?linkid=2282329
-        -->
+            <!-- Register Value Converters -->
+            <converters:EntryButtonTextConverter x:Key="EntryButtonTextConverter"/>
+            <converters:IsNotNullConverter x:Key="IsNotNullConverter"/>
+            <converters:InvertedBoolConverter x:Key="InvertedBoolConverter"/>
+
+            <!-- THEME CUSTOMIZATION: Your Custom Colors -->
+            <!-- These are DYNAMIC - they change when theme toggles -->
+
+            
+            <!-- Default to Light Theme -->
+            <Color x:Key="PrimaryBackground">#ead8c2</Color>
+            <Color x:Key="SecondaryBackground">#e3ddc5</Color>
+            <Color x:Key="AccentColor">#ae866c</Color>
+            <Color x:Key="PrimaryText">#543f3f</Color>
+            <Color x:Key="SecondaryText">#765555</Color>
+
+            <!-- 
+            When user clicks theme toggle:
+            - ThemeService updates these colors dynamically
+            - Light Mode: Cream background, dark text
+            - Dark Mode: Dark brown background, light text
+            -->
+
+            <!-- Global Styles -->
+
+            <Style TargetType="ContentPage" ApplyToDerivedTypes="True">
+                <Setter Property="BackgroundColor" Value="{DynamicResource PrimaryBackground}" />
+            </Style>
+
+            <Style TargetType="NavigationPage">
+                <Setter Property="BarBackgroundColor" Value="{DynamicResource SecondaryBackground}" />
+                <Setter Property="BarTextColor" Value="{DynamicResource PrimaryText}" />
+            </Style>
 
         </ResourceDictionary>
     </Application.Resources>

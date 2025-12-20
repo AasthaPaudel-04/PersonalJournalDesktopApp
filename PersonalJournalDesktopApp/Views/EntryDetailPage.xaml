@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:PersonalJournalDesktopApp.ViewModels"
+             x:Class="PersonalJournalDesktopApp.Views.EntryDetailPage"
+             x:DataType="vm:EntryDetailViewModel"
+             Title="{Binding PageTitle}"
+             BackgroundColor="{DynamicResource PrimaryBackground}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- ============== JOURNAL ENTRY: TITLE ============== -->
+            <Frame BackgroundColor="{DynamicResource SecondaryBackground}"
+                   CornerRadius="10"
+                   Padding="0"
+                   HasShadow="False">
+                <Entry Placeholder="Entry Title *"
+                       Text="{Binding Title}"
+                       FontSize="18"
+                       TextColor="{DynamicResource PrimaryText}"
+                       PlaceholderColor="{DynamicResource SecondaryText}"
+                       BackgroundColor="Transparent"
+                       Margin="10"/>
+            </Frame>
+
+            <!-- ============== JOURNAL ENTRY: CONTENT ============== -->
+            <Frame BackgroundColor="{DynamicResource SecondaryBackground}"
+                   CornerRadius="10"
+                   Padding="0"
+                   HasShadow="False">
+                <Editor Placeholder="Write your thoughts here..."
+                        Text="{Binding Content}"
+                        FontSize="16"
+                        TextColor="{DynamicResource PrimaryText}"
+                        PlaceholderColor="{DynamicResource SecondaryText}"
+                        BackgroundColor="Transparent"
+                        HeightRequest="200"
+                        AutoSize="TextChanges"
+                        Margin="10"/>
+            </Frame>
+
+            <!-- ============== MOOD TRACKING SECTION ============== -->
+            <Frame BackgroundColor="{DynamicResource SecondaryBackground}"
+                   CornerRadius="15"
+                   Padding="15"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="How are you feeling?"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="{DynamicResource PrimaryText}"/>
+
+                    <!-- MOOD TRACKING: Primary Mood (Required) -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Primary Mood *"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{DynamicResource SecondaryText}"/>
+
+                        <Picker ItemsSource="{Binding AllMoods}"
+                                SelectedItem="{Binding SelectedPrimaryMood}"
+                                ItemDisplayBinding="{Binding Name}"
+                                Title="Select primary mood"
+                                FontSize="16"
+                                TextColor="{DynamicResource PrimaryText}"
+                                BackgroundColor="{DynamicResource PrimaryBackground}"/>
+
+                        <!-- Display emoji for selected mood -->
+                        <Label Text="{Binding SelectedPrimaryMood.Emoji}"
+                               FontSize="40"
+                               HorizontalOptions="Center"
+                               IsVisible="{Binding SelectedPrimaryMood, Converter={StaticResource IsNotNullConverter}}"/>
+                    </VerticalStackLayout>
+
+                    <!-- MOOD TRACKING: Secondary Mood 1 (Optional) -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Secondary Mood 1 (Optional)"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{DynamicResource SecondaryText}"/>
+
+                        <Picker ItemsSource="{Binding AllMoods}"
+                                SelectedItem="{Binding SelectedSecondaryMood1}"
+                                ItemDisplayBinding="{Binding Name}"
+                                Title="Select secondary mood"
+                                FontSize="16"
+                                TextColor="{DynamicResource PrimaryText}"
+                                BackgroundColor="{DynamicResource PrimaryBackground}"/>
+
+                        <Label Text="{Binding SelectedSecondaryMood1.Emoji}"
+                               FontSize="30"
+                               HorizontalOptions="Center"
+                               IsVisible="{Binding SelectedSecondaryMood1, Converter={StaticResource IsNotNullConverter}}"/>
+                    </VerticalStackLayout>
+
+                    <!-- MOOD TRACKING: Secondary Mood 2 (Optional) -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Secondary Mood 2 (Optional)"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{DynamicResource SecondaryText}"/>
+
+                        <Picker ItemsSource="{Binding AllMoods}"
+                                SelectedItem="{Binding SelectedSecondaryMood2}"
+                                ItemDisplayBinding="{Binding Name}"
+                                Title="Select secondary mood"
+                                FontSize="16"
+                                TextColor="{DynamicResource PrimaryText}"
+                                BackgroundColor="{DynamicResource PrimaryBackground}"/>
+
+                        <Label Text="{Binding SelectedSecondaryMood2.Emoji}"
+                               FontSize="30"
+                               HorizontalOptions="Center"
+                               IsVisible="{Binding SelectedSecondaryMood2, Converter={StaticResource IsNotNullConverter}}"/>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- ============== ACTION BUTTONS ============== -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                <!-- JOURNAL ENTRY MANAGEMENT: Save Button -->
+                <Button Grid.Column="0"
+                        Text="Save"
+                        Command="{Binding SaveEntryCommand}"
+                        BackgroundColor="{DynamicResource AccentColor}"
+                        TextColor="{DynamicResource PrimaryBackground}"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        CornerRadius="10"
+                        HeightRequest="50"/>
+
+                <!-- Cancel Button -->
+                <Button Grid.Column="1"
+                        Text="Cancel"
+                        Command="{Binding CancelCommand}"
+                        BackgroundColor="{DynamicResource SecondaryText}"
+                        TextColor="{DynamicResource PrimaryBackground}"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        CornerRadius="10"
+                        HeightRequest="50"/>
+            </Grid>
+
+            <!-- JOURNAL ENTRY MANAGEMENT: Delete Button (only for existing entries) -->
+            <Button Text="🗑️ Delete Entry"
+                    Command="{Binding DeleteEntryCommand}"
+                    IsVisible="{Binding IsNewEntry, Converter={StaticResource InvertedBoolConverter}}"
+                    BackgroundColor="Transparent"
+                    TextColor="#d32f2f"
+                    FontSize="14"
+                    BorderColor="#d32f2f"
+                    BorderWidth="1"
+                    CornerRadius="10"
+                    HeightRequest="45"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

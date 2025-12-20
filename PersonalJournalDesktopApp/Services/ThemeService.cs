@@ -19,11 +19,11 @@ namespace PersonalJournalDesktopApp.Services
         }
 
         // Get current theme from settings
-        public async Task<CustomAppTheme> GetCurrentThemeAsync()
+        public async Task<Models.AppTheme> GetCurrentThemeAsync()
         {
             var themeSetting = await _database.GetSettingAsync(THEME_KEY);
             var mode = themeSetting == "Dark" ? ThemeMode.Dark : ThemeMode.Light;
-            return new CustomAppTheme { Mode = mode };
+            return new Models.AppTheme { Mode = mode };
         }
 
         // Save theme preference
@@ -41,7 +41,7 @@ namespace PersonalJournalDesktopApp.Services
         }
 
         // Apply theme to app resources
-        public void ApplyTheme(CustomAppTheme theme)
+        public void ApplyTheme(PersonalJournalDesktopApp.Models.AppTheme theme)
         {
             var resources = Application.Current!.Resources;
 

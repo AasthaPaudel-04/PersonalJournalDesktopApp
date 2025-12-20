@@ -12,7 +12,7 @@ namespace PersonalJournalDesktopApp.Models
         Dark
     }
 
-    public class CustomAppTheme
+    public class AppTheme
     {
         public ThemeMode Mode { get; set; }
 
