@@ -1,13 +1,10 @@
-﻿using PersonalJournalDesktopApp.Views;
-namespace PersonalJournalDesktopApp
+﻿namespace PersonalJournalDesktopApp;
+
+public partial class App : Application
 {
-    public partial class App : Application
+    public App()
     {
-        public App()
-        {
-            InitializeComponent();
-            MainPage = new NavigationPage(new MainPage(
-                MauiProgram.Services.GetRequiredService<ViewModels.MainViewModel>()));
-        }
+        InitializeComponent();
+        MainPage = new AppShell();
     }
 }

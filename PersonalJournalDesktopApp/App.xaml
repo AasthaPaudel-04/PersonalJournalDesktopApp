@@ -6,41 +6,22 @@
              x:Class="PersonalJournalDesktopApp.App">
     <Application.Resources>
         <ResourceDictionary>
-
             <!-- Register Value Converters -->
             <converters:EntryButtonTextConverter x:Key="EntryButtonTextConverter"/>
             <converters:IsNotNullConverter x:Key="IsNotNullConverter"/>
             <converters:InvertedBoolConverter x:Key="InvertedBoolConverter"/>
 
-            <!-- THEME CUSTOMIZATION: Your Custom Colors -->
-            <!-- These are DYNAMIC - they change when theme toggles -->
-
-            
-            <!-- Default to Light Theme -->
+            <!-- Theme Colors -->
             <Color x:Key="PrimaryBackground">#ead8c2</Color>
             <Color x:Key="SecondaryBackground">#e3ddc5</Color>
             <Color x:Key="AccentColor">#ae866c</Color>
             <Color x:Key="PrimaryText">#543f3f</Color>
             <Color x:Key="SecondaryText">#765555</Color>
 
-            <!-- 
-            When user clicks theme toggle:
-            - ThemeService updates these colors dynamically
-            - Light Mode: Cream background, dark text
-            - Dark Mode: Dark brown background, light text
-            -->
-
             <!-- Global Styles -->
-
             <Style TargetType="ContentPage" ApplyToDerivedTypes="True">
                 <Setter Property="BackgroundColor" Value="{DynamicResource PrimaryBackground}" />
             </Style>
-
-            <Style TargetType="NavigationPage">
-                <Setter Property="BarBackgroundColor" Value="{DynamicResource SecondaryBackground}" />
-                <Setter Property="BarTextColor" Value="{DynamicResource PrimaryText}" />
-            </Style>
-
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:PersonalJournalDesktopApp.ViewModels"
+             x:Class="PersonalJournalDesktopApp.Views.SecurityPage"
+             x:DataType="vm:SecurityViewModel"
+             Title="Security Settings"
+             BackgroundColor="{DynamicResource PrimaryBackground}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- Security Status -->
+            <Frame BackgroundColor="{DynamicResource SecondaryBackground}"
+                   CornerRadius="15"
+                   Padding="20"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="🔒 PIN Protection"
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           TextColor="{DynamicResource PrimaryText}"/>
+
+                    <Frame Padding="15"
+                           CornerRadius="10"
+                           HasShadow="False">
+                        <Frame.Style>
+                            <Style TargetType="Frame">
+                                <Setter Property="BackgroundColor" Value="#d32f2f"/>
+                                <Style.Triggers>
+                                    <DataTrigger TargetType="Frame" 
+                                                 Binding="{Binding IsSecurityEnabled}" 
+                                                 Value="True">
+                                        <Setter Property="BackgroundColor" Value="#4CAF50"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Frame.Style>
+
+                        <HorizontalStackLayout Spacing="10">
+                            <Label FontSize="24" VerticalOptions="Center">
+                                <Label.Style>
+                                    <Style TargetType="Label">
+                                        <Setter Property="Text" Value="🔓"/>
+                                        <Style.Triggers>
+                                            <DataTrigger TargetType="Label" 
+                                                         Binding="{Binding IsSecurityEnabled}" 
+                                                         Value="True">
+                                                <Setter Property="Text" Value="🔒"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Label.Style>
+                            </Label>
+
+                            <VerticalStackLayout Spacing="3">
+                                <Label FontSize="14" FontAttributes="Bold" TextColor="White">
+                                    <Label.Style>
+                                        <Style TargetType="Label">
+                                            <Setter Property="Text" Value="PIN Protection: Disabled"/>
+                                            <Style.Triggers>
+                                                <DataTrigger TargetType="Label" 
+                                                             Binding="{Binding IsSecurityEnabled}" 
+                                                             Value="True">
+                                                    <Setter Property="Text" Value="PIN Protection: Enabled"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Label.Style>
+                                </Label>
+
+                                <Label FontSize="11" TextColor="White" Opacity="0.9">
+                                    <Label.Style>
+                                        <Style TargetType="Label">
+                                            <Setter Property="Text" Value="Your journal is not protected"/>
+                                            <Style.Triggers>
+                                                <DataTrigger TargetType="Label" 
+                                                             Binding="{Binding IsSecurityEnabled}" 
+                                                             Value="True">
+                                                    <Setter Property="Text" Value="Your journal is protected with a PIN"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Label.Style>
+                                </Label>
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
+                    </Frame>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Setup PIN (when disabled) -->
+            <Frame BackgroundColor="{DynamicResource SecondaryBackground}"
+                   CornerRadius="15"
+                   Padding="20"
+                   HasShadow="True"
+                   IsVisible="{Binding IsSecurityEnabled, Converter={StaticResource InvertedBoolConverter}}">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Setup PIN Protection"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="{DynamicResource PrimaryText}"/>
+
+                    <Label Text="Protect your journal with a 4-digit PIN. You'll be asked to enter this PIN every time you open the app."
+                           FontSize="12"
+                           TextColor="{DynamicResource SecondaryText}"
+                           LineBreakMode="WordWrap"/>
+
+                    <Entry Placeholder="Enter 4-digit PIN"
+                           Text="{Binding PinEntry}"
+                           IsPassword="True"
+                           Keyboard="Numeric"
+                           MaxLength="6"
+                           FontSize="16"
+                           TextColor="{DynamicResource PrimaryText}"
+                           PlaceholderColor="{DynamicResource SecondaryText}"
+                           BackgroundColor="{DynamicResource PrimaryBackground}"/>
+
+                    <Entry Placeholder="Confirm PIN"
+                           Text="{Binding ConfirmPinEntry}"
+                           IsPassword="True"
+                           Keyboard="Numeric"
+                           MaxLength="6"
+                           FontSize="16"
+                           TextColor="{DynamicResource PrimaryText}"
+                           PlaceholderColor="{DynamicResource SecondaryText}"
+                           BackgroundColor="{DynamicResource PrimaryBackground}"/>
+
+                    <Button Text="🔒 Enable PIN Protection"
+                            Command="{Binding SetupPinCommand}"
+                            BackgroundColor="{DynamicResource AccentColor}"
+                            TextColor="{DynamicResource PrimaryBackground}"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            CornerRadius="10"
+                            HeightRequest="50"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Manage PIN (when enabled) -->
+            <Frame BackgroundColor="{DynamicResource SecondaryBackground}"
+                   CornerRadius="15"
+                   Padding="20"
+                   HasShadow="True"
+                   IsVisible="{Binding IsSecurityEnabled}">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Manage PIN"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="{DynamicResource PrimaryText}"/>
+
+                    <!-- Change PIN -->
+                    <Frame BackgroundColor="{DynamicResource PrimaryBackground}"
+                           Padding="15"
+                           CornerRadius="10"
+                           HasShadow="False">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="Change PIN"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="{DynamicResource PrimaryText}"/>
+
+                            <Entry Placeholder="Enter new PIN"
+                                   Text="{Binding PinEntry}"
+                                   IsPassword="True"
+                                   Keyboard="Numeric"
+                                   MaxLength="6"
+                                   FontSize="14"
+                                   TextColor="{DynamicResource PrimaryText}"
+                                   PlaceholderColor="{DynamicResource SecondaryText}"
+                                   BackgroundColor="{DynamicResource SecondaryBackground}"/>
+
+                            <Entry Placeholder="Confirm new PIN"
+                                   Text="{Binding ConfirmPinEntry}"
+                                   IsPassword="True"
+                                   Keyboard="Numeric"
+                                   MaxLength="6"
+                                   FontSize="14"
+                                   TextColor="{DynamicResource PrimaryText}"
+                                   PlaceholderColor="{DynamicResource SecondaryText}"
+                                   BackgroundColor="{DynamicResource SecondaryBackground}"/>
+
+                            <Button Text="Change PIN"
+                                    Command="{Binding ChangePinCommand}"
+                                    BackgroundColor="{DynamicResource AccentColor}"
+                                    TextColor="{DynamicResource PrimaryBackground}"
+                                    FontSize="14"
+                                    FontAttributes="Bold"
+                                    CornerRadius="8"
+                                    HeightRequest="45"/>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Disable PIN -->
+                    <Button Text="🔓 Disable PIN Protection"
+                            Command="{Binding DisableSecurityCommand}"
+                            BackgroundColor="#d32f2f"
+                            TextColor="White"
+                            FontSize="14"
+                            FontAttributes="Bold"
+                            CornerRadius="10"
+                            HeightRequest="45"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Info -->
+            <Frame BackgroundColor="{DynamicResource SecondaryBackground}"
+                   CornerRadius="15"
+                   Padding="15"
+                   HasShadow="False">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="ℹ️ About PIN Protection"
+                           FontSize="14"
+                           FontAttributes="Bold"
+                           TextColor="{DynamicResource PrimaryText}"/>
+
+                    <Label Text="• Your PIN is securely stored and never transmitted"
+                           FontSize="12"
+                           TextColor="{DynamicResource SecondaryText}"/>
+
+                    <Label Text="• Make sure to remember your PIN - there's no recovery option"
+                           FontSize="12"
+                           TextColor="{DynamicResource SecondaryText}"/>
+
+                    <Label Text="• We recommend using a PIN that's easy to remember but hard to guess"
+                           FontSize="12"
+                           TextColor="{DynamicResource SecondaryText}"/>
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:PersonalJournalDesktopApp.ViewModels"
+             xmlns:models="clr-namespace:PersonalJournalDesktopApp.Models"
              x:Class="PersonalJournalDesktopApp.Views.EntryDetailPage"
              x:DataType="vm:EntryDetailViewModel"
              Title="{Binding PageTitle}"
@@ -40,6 +41,27 @@
                         Margin="10"/>
             </Frame>
 
+            <!-- ============== CATEGORY SELECTION ============== -->
+            <Frame BackgroundColor="{DynamicResource SecondaryBackground}"
+                   CornerRadius="15"
+                   Padding="15"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="📁 Category (Optional)"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="{DynamicResource PrimaryText}"/>
+
+                    <Picker ItemsSource="{Binding AllCategories}"
+                            SelectedItem="{Binding SelectedCategory}"
+                            ItemDisplayBinding="{Binding Name}"
+                            Title="Select category"
+                            FontSize="14"
+                            TextColor="{DynamicResource PrimaryText}"
+                            BackgroundColor="{DynamicResource PrimaryBackground}"/>
+                </VerticalStackLayout>
+            </Frame>
+
             <!-- ============== MOOD TRACKING SECTION ============== -->
             <Frame BackgroundColor="{DynamicResource SecondaryBackground}"
                    CornerRadius="15"
@@ -66,7 +88,6 @@
                                 TextColor="{DynamicResource PrimaryText}"
                                 BackgroundColor="{DynamicResource PrimaryBackground}"/>
 
-                        <!-- Display emoji for selected mood -->
                         <Label Text="{Binding SelectedPrimaryMood.Emoji}"
                                FontSize="40"
                                HorizontalOptions="Center"
@@ -117,9 +138,110 @@
                 </VerticalStackLayout>
             </Frame>
 
+            <!-- ============== TAGS SECTION ============== -->
+            <Frame BackgroundColor="{DynamicResource SecondaryBackground}"
+                   CornerRadius="15"
+                   Padding="15"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="🏷️ Tags"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="{DynamicResource PrimaryText}"/>
+
+                    <!-- Add New Tag -->
+                    <HorizontalStackLayout Spacing="10">
+                        <Entry Placeholder="Add custom tag..."
+                               Text="{Binding NewTagName}"
+                               FontSize="14"
+                               HorizontalOptions="FillAndExpand"
+                               TextColor="{DynamicResource PrimaryText}"
+                               PlaceholderColor="{DynamicResource SecondaryText}"
+                               BackgroundColor="{DynamicResource PrimaryBackground}"/>
+
+                        <Button Text="+"
+                                Command="{Binding AddNewTagCommand}"
+                                BackgroundColor="{DynamicResource AccentColor}"
+                                TextColor="{DynamicResource PrimaryBackground}"
+                                FontSize="18"
+                                FontAttributes="Bold"
+                                WidthRequest="40"
+                                HeightRequest="40"
+                                CornerRadius="20"/>
+                    </HorizontalStackLayout>
+
+                    <!-- Selected Tags -->
+                    <Label Text="Selected Tags:"
+                           FontSize="14"
+                           FontAttributes="Bold"
+                           TextColor="{DynamicResource SecondaryText}"
+                           IsVisible="{Binding SelectedTags.Count}"/>
+
+                    <FlexLayout BindableLayout.ItemsSource="{Binding SelectedTags}"
+                                Wrap="Wrap"
+                                JustifyContent="Start"
+                                AlignItems="Start">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:Tag">
+                                <Frame BackgroundColor="{DynamicResource AccentColor}"
+                                       Padding="8,4"
+                                       Margin="4"
+                                       CornerRadius="12"
+                                       HasShadow="False">
+                                    <Frame.GestureRecognizers>
+                                        <TapGestureRecognizer 
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EntryDetailViewModel}}, Path=ToggleTagCommand}"
+                                            CommandParameter="{Binding .}"/>
+                                    </Frame.GestureRecognizers>
+                                    <Label Text="{Binding Name}"
+                                           TextColor="{DynamicResource PrimaryBackground}"
+                                           FontSize="12"/>
+                                </Frame>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </FlexLayout>
+
+                    <!-- Available Tags -->
+                    <Label Text="Tap tags to add/remove:"
+                           FontSize="14"
+                           TextColor="{DynamicResource SecondaryText}"
+                           Margin="0,10,0,5"/>
+
+                    <ScrollView Orientation="Horizontal" HeightRequest="100">
+                        <FlexLayout BindableLayout.ItemsSource="{Binding AllTags}"
+                                    Wrap="Wrap"
+                                    Direction="Row"
+                                    JustifyContent="Start"
+                                    AlignItems="Start">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="models:Tag">
+                                    <Frame Padding="8,4"
+                                           Margin="4"
+                                           CornerRadius="12"
+                                           HasShadow="False">
+                                        <Frame.Style>
+                                            <Style TargetType="Frame">
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource SecondaryText}"/>
+                                            </Style>
+                                        </Frame.Style>
+                                        <Frame.GestureRecognizers>
+                                            <TapGestureRecognizer 
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EntryDetailViewModel}}, Path=ToggleTagCommand}"
+                                                CommandParameter="{Binding .}"/>
+                                        </Frame.GestureRecognizers>
+                                        <Label Text="{Binding Name}"
+                                               TextColor="{DynamicResource PrimaryBackground}"
+                                               FontSize="11"/>
+                                    </Frame>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </FlexLayout>
+                    </ScrollView>
+                </VerticalStackLayout>
+            </Frame>
+
             <!-- ============== ACTION BUTTONS ============== -->
             <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                <!-- JOURNAL ENTRY MANAGEMENT: Save Button -->
                 <Button Grid.Column="0"
                         Text="Save"
                         Command="{Binding SaveEntryCommand}"
@@ -130,7 +252,6 @@
                         CornerRadius="10"
                         HeightRequest="50"/>
 
-                <!-- Cancel Button -->
                 <Button Grid.Column="1"
                         Text="Cancel"
                         Command="{Binding CancelCommand}"
@@ -142,7 +263,7 @@
                         HeightRequest="50"/>
             </Grid>
 
-            <!-- JOURNAL ENTRY MANAGEMENT: Delete Button (only for existing entries) -->
+            <!-- Delete Button (only for existing entries) -->
             <Button Text="🗑️ Delete Entry"
                     Command="{Binding DeleteEntryCommand}"
                     IsVisible="{Binding IsNewEntry, Converter={StaticResource InvertedBoolConverter}}"

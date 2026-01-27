@@ -1,40 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PersonalJournalDesktopApp.Models;
 using PersonalJournalDesktopApp.Services;
-using System.Collections.ObjectModel;
 
 namespace PersonalJournalDesktopApp.ViewModels
 {
-    public partial class EntryDetailViewModel: ObservableObject
+    public partial class EntryDetailViewModel : ObservableObject
     {
         private readonly JournalService _journalService;
         private readonly MoodService _moodService;
+        private readonly TagService _tagService;
+        private readonly CategoryService _categoryService;
 
-        // JOURNAL ENTRY MANAGEMENT - Current entry
-        [ObservableProperty]
-        private JournalEntry entry = new();
-
-        [ObservableProperty]
-        private DateTime selectedDate;
-
-        // Entry fields
         [ObservableProperty]
         private string title = string.Empty;
 
         [ObservableProperty]
         private string content = string.Empty;
 
-        // MOOD TRACKING - All available moods
         [ObservableProperty]
-        private ObservableCollection<Mood> allMoods = new();
+        private DateTime selectedDate;
 
-        // MOOD TRACKING - Selected moods
         [ObservableProperty]
         private Mood? selectedPrimaryMood;
 
@@ -44,102 +37,195 @@ namespace PersonalJournalDesktopApp.ViewModels
         [ObservableProperty]
         private Mood? selectedSecondaryMood2;
 
-        // UI state
         [ObservableProperty]
-        private bool isNewEntry = true;
+        private Category? selectedCategory;
+
+        [ObservableProperty]
+        private ObservableCollection<Mood> allMoods = new();
+
+        [ObservableProperty]
+        private ObservableCollection<Category> allCategories = new();
+
+        [ObservableProperty]
+        private ObservableCollection<Tag> allTags = new();
+
+        [ObservableProperty]
+        private ObservableCollection<Tag> selectedTags = new();
+
+        [ObservableProperty]
+        private string newTagName = string.Empty;
+
+        [ObservableProperty]
+        private bool isNewEntry;
 
         [ObservableProperty]
         private string pageTitle = "New Entry";
 
-        public EntryDetailViewModel(JournalService journalService, MoodService moodService)
+        private int _entryId;
+
+        public EntryDetailViewModel(
+            JournalService journalService,
+            MoodService moodService,
+            TagService tagService,
+            CategoryService categoryService)
         {
             _journalService = journalService;
             _moodService = moodService;
+            _tagService = tagService;
+            _categoryService = categoryService;
         }
 
-        // Receive navigation parameters
-        
-
-        public async Task InitializeAsync()
+        public async Task InitializeAsync(DateTime date)
         {
-            IsNewEntry = Entry.Id == 0;
-            PageTitle = IsNewEntry
-                ? $"New Entry - {SelectedDate:MMM dd, yyyy}"
-                : $"Edit Entry - {SelectedDate:MMM dd, yyyy}";
+            SelectedDate = date;
 
-            Title = Entry.Title;
-            Content = Entry.Content;
-
-            await LoadMoodsAsync();
-        }
-
-        // MOOD TRACKING - Load all moods and set selected ones
-        private async Task LoadMoodsAsync()
-        {
+            // Load moods
             var moods = await _moodService.GetAllMoodsAsync();
             AllMoods = new ObservableCollection<Mood>(moods);
 
-            // Load previously selected moods
-            if (Entry.PrimaryMoodId.HasValue)
-                SelectedPrimaryMood = AllMoods.FirstOrDefault(m => m.Id == Entry.PrimaryMoodId);
+            // Load categories
+            var categories = await _categoryService.GetAllCategoriesAsync();
+            AllCategories = new ObservableCollection<Category>(categories);
 
-            if (Entry.SecondaryMood1Id.HasValue)
-                SelectedSecondaryMood1 = AllMoods.FirstOrDefault(m => m.Id == Entry.SecondaryMood1Id);
+            // Load tags
+            var tags = await _tagService.GetAllTagsAsync();
+            AllTags = new ObservableCollection<Tag>(tags);
 
-            if (Entry.SecondaryMood2Id.HasValue)
-                SelectedSecondaryMood2 = AllMoods.FirstOrDefault(m => m.Id == Entry.SecondaryMood2Id);
+            // Check if entry exists for this date
+            var entry = await _journalService.GetEntryByDateAsync(date);
+
+            if (entry != null)
+            {
+                _entryId = entry.Id;
+                Title = entry.Title;
+                Content = entry.Content;
+                IsNewEntry = false;
+                PageTitle = $"Edit Entry - {date:MMM dd, yyyy}";
+
+                // Set moods
+                if (entry.PrimaryMoodId.HasValue)
+                    SelectedPrimaryMood = AllMoods.FirstOrDefault(m => m.Id == entry.PrimaryMoodId.Value);
+
+                if (entry.SecondaryMood1Id.HasValue)
+                    SelectedSecondaryMood1 = AllMoods.FirstOrDefault(m => m.Id == entry.SecondaryMood1Id.Value);
+
+                if (entry.SecondaryMood2Id.HasValue)
+                    SelectedSecondaryMood2 = AllMoods.FirstOrDefault(m => m.Id == entry.SecondaryMood2Id.Value);
+
+                // Set category
+                if (entry.CategoryId.HasValue)
+                    SelectedCategory = AllCategories.FirstOrDefault(c => c.Id == entry.CategoryId.Value);
+
+                // Load entry tags
+                var entryTags = await _tagService.GetTagsForEntryAsync(entry.Id);
+                SelectedTags = new ObservableCollection<Tag>(entryTags);
+            }
+            else
+            {
+                _entryId = 0;
+                IsNewEntry = true;
+                PageTitle = $"New Entry - {date:MMM dd, yyyy}";
+            }
         }
 
-        // JOURNAL ENTRY MANAGEMENT - Save (Create/Update)
         [RelayCommand]
-        private async Task SaveEntry()
+        private async Task SaveEntryAsync()
         {
             if (string.IsNullOrWhiteSpace(Title))
             {
-                await Application.Current.MainPage.DisplayAlert("Validation Error", "Title is required", "OK");
+                await Application.Current!.MainPage!.DisplayAlert("Error", "Please enter a title", "OK");
                 return;
             }
 
-            Entry.Date = SelectedDate;
-            Entry.Title = Title;
-            Entry.Content = Content;
-            Entry.PrimaryMoodId = SelectedPrimaryMood?.Id;
-            Entry.SecondaryMood1Id = SelectedSecondaryMood1?.Id;
-            Entry.SecondaryMood2Id = SelectedSecondaryMood2?.Id;
-
-            await _journalService.SaveEntryAsync(Entry);
-
-            await Application.Current.MainPage.DisplayAlert("Success", "Entry saved successfully!", "OK");
-            await Application.Current.MainPage.Navigation.PopAsync();
-        }
-
-        [RelayCommand]
-        private async Task Cancel()
-        {
-            await Application.Current.MainPage.Navigation.PopAsync();
-        }
-
-        [RelayCommand]
-        private async Task DeleteEntry()
-        {
-            if (IsNewEntry)
+            var entry = new JournalEntry
             {
-                await Application.Current.MainPage.Navigation.PopAsync();
-                return;
-            }
+                Id = _entryId,
+                Date = SelectedDate,
+                Title = Title,
+                Content = Content,
+                PrimaryMoodId = SelectedPrimaryMood?.Id,
+                SecondaryMood1Id = SelectedSecondaryMood1?.Id,
+                SecondaryMood2Id = SelectedSecondaryMood2?.Id,
+                CategoryId = SelectedCategory?.Id
+            };
 
-            var confirm = await Application.Current.MainPage.DisplayAlert(
+            var savedEntryId = await _journalService.SaveEntryAsync(entry);
+
+            // Save tags
+            var tagIds = SelectedTags.Select(t => t.Id).ToList();
+            await _tagService.SaveEntryTagsAsync(savedEntryId, tagIds);
+
+            await Shell.Current.GoToAsync("..");
+        }
+
+        [RelayCommand]
+        private async Task DeleteEntryAsync()
+        {
+            var confirm = await Application.Current!.MainPage!.DisplayAlert(
                 "Confirm Delete",
                 "Are you sure you want to delete this entry?",
-                "Yes",
-                "No");
+                "Delete",
+                "Cancel");
 
-            if (confirm)
+            if (confirm && _entryId > 0)
             {
-                await _journalService.DeleteEntryAsync(Entry.Id);
-                await Application.Current.MainPage.DisplayAlert("Success", "Entry deleted successfully!", "OK");
-                await Application.Current.MainPage.Navigation.PopAsync();
+                await _journalService.DeleteEntryAsync(_entryId);
+                await Shell.Current.GoToAsync("..");
             }
+        }
+
+        [RelayCommand]
+        private async Task CancelAsync()
+        {
+            await Shell.Current.GoToAsync("..");
+        }
+
+        [RelayCommand]
+        private void ToggleTag(Tag tag)
+        {
+            if (SelectedTags.Contains(tag))
+            {
+                SelectedTags.Remove(tag);
+            }
+            else
+            {
+                SelectedTags.Add(tag);
+            }
+        }
+
+        [RelayCommand]
+        private async Task AddNewTagAsync()
+        {
+            if (string.IsNullOrWhiteSpace(NewTagName))
+                return;
+
+            // Check if tag already exists
+            var existingTag = AllTags.FirstOrDefault(t =>
+                t.Name.Equals(NewTagName, StringComparison.OrdinalIgnoreCase));
+
+            if (existingTag != null)
+            {
+                // Add existing tag to selected
+                if (!SelectedTags.Contains(existingTag))
+                    SelectedTags.Add(existingTag);
+            }
+            else
+            {
+                // Create new tag
+                var tagId = await _tagService.CreateTagAsync(NewTagName);
+                var newTag = new Tag
+                {
+                    Id = tagId,
+                    Name = NewTagName,
+                    IsPreDefined = false,
+                    Color = "#ae866c"
+                };
+
+                AllTags.Add(newTag);
+                SelectedTags.Add(newTag);
+            }
+
+            NewTagName = string.Empty;
         }
     }
 }

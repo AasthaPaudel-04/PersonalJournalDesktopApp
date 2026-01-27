@@ -30,14 +30,28 @@ public static class MauiProgram
         builder.Services.AddSingleton<JournalService>();
         builder.Services.AddSingleton<MoodService>();
         builder.Services.AddSingleton<ThemeService>();
+        builder.Services.AddSingleton<TagService>();
+        builder.Services.AddSingleton<CategoryService>();
+        builder.Services.AddSingleton<AnalyticsService>();
+        builder.Services.AddSingleton<SearchService>();
+        builder.Services.AddSingleton<ExportService>();
+        builder.Services.AddSingleton<SecurityService>();
 
         // Register ViewModels
         builder.Services.AddTransient<MainViewModel>();
         builder.Services.AddTransient<EntryDetailViewModel>();
+        builder.Services.AddTransient<SearchViewModel>();
+        builder.Services.AddTransient<AnalyticsViewModel>();
+        builder.Services.AddTransient<SecurityViewModel>();
+        builder.Services.AddTransient<LoginViewModel>();
 
         // Register Views
         builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<EntryDetailPage>();
+        builder.Services.AddTransient<SearchPage>();
+        builder.Services.AddTransient<AnalyticsPage>();
+        builder.Services.AddTransient<SecurityPage>();
+        builder.Services.AddTransient<LoginPage>();
 
         // Register Navigation Routes
         Routing.RegisterRoute("EntryDetailPage", typeof(EntryDetailPage));

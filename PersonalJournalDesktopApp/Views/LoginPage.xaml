@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:PersonalJournalDesktopApp.ViewModels"
+             x:Class="PersonalJournalDesktopApp.Views.LoginPage"
+             x:DataType="vm:LoginViewModel"
+             BackgroundColor="{DynamicResource PrimaryBackground}"
+             NavigationPage.HasNavigationBar="False">
+
+    <VerticalStackLayout Padding="40" Spacing="30" VerticalOptions="Center">
+
+        <!-- App Logo/Icon -->
+        <Label Text="📔"
+               FontSize="80"
+               HorizontalOptions="Center"/>
+
+        <Label Text="My Journal"
+               FontSize="32"
+               FontAttributes="Bold"
+               TextColor="{DynamicResource PrimaryText}"
+               HorizontalOptions="Center"/>
+
+        <!-- PIN Entry -->
+        <Frame BackgroundColor="{DynamicResource SecondaryBackground}"
+               CornerRadius="20"
+               Padding="30"
+               HasShadow="True">
+            <VerticalStackLayout Spacing="20">
+                <Label Text="🔒 Enter PIN"
+                       FontSize="20"
+                       FontAttributes="Bold"
+                       TextColor="{DynamicResource PrimaryText}"
+                       HorizontalOptions="Center"/>
+
+                <Label Text="Please enter your PIN to access your journal"
+                       FontSize="13"
+                       TextColor="{DynamicResource SecondaryText}"
+                       HorizontalOptions="Center"
+                       HorizontalTextAlignment="Center"/>
+
+                <Entry Placeholder="Enter PIN"
+                       Text="{Binding PinEntry}"
+                       IsPassword="True"
+                       Keyboard="Numeric"
+                       MaxLength="6"
+                       FontSize="24"
+                       HorizontalTextAlignment="Center"
+                       TextColor="{DynamicResource PrimaryText}"
+                       PlaceholderColor="{DynamicResource SecondaryText}"
+                       BackgroundColor="{DynamicResource PrimaryBackground}"
+                       ReturnCommand="{Binding AuthenticateCommand}"/>
+
+                <Button Text="Unlock"
+                        Command="{Binding AuthenticateCommand}"
+                        BackgroundColor="{DynamicResource AccentColor}"
+                        TextColor="{DynamicResource PrimaryBackground}"
+                        FontSize="18"
+                        FontAttributes="Bold"
+                        CornerRadius="15"
+                        HeightRequest="55"
+                        IsEnabled="{Binding IsAuthenticating, Converter={StaticResource InvertedBoolConverter}}"/>
+
+                <ActivityIndicator IsRunning="{Binding IsAuthenticating}"
+                                   IsVisible="{Binding IsAuthenticating}"
+                                   Color="{DynamicResource AccentColor}"
+                                   HeightRequest="30"/>
+            </VerticalStackLayout>
+        </Frame>
+
+        <Label Text="Forgot your PIN? You'll need to reinstall the app (all data will be lost)"
+               FontSize="11"
+               TextColor="{DynamicResource SecondaryText}"
+               HorizontalOptions="Center"
+               HorizontalTextAlignment="Center"
+               Margin="0,20,0,0"/>
+
+    </VerticalStackLayout>
+</ContentPage>

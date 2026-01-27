@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:PersonalJournalDesktopApp.ViewModels"
+             xmlns:models="clr-namespace:PersonalJournalDesktopApp.Models"
+             x:Class="PersonalJournalDesktopApp.Views.SearchPage"
+             x:DataType="vm:SearchViewModel"
+             Title="Search and Filter"
+             BackgroundColor="{DynamicResource PrimaryBackground}">
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Filter Panel -->
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="20" Spacing="15">
+
+                <!-- Search Text -->
+                <Frame BackgroundColor="{DynamicResource SecondaryBackground}"
+                       CornerRadius="10"
+                       Padding="0"
+                       HasShadow="False">
+                    <SearchBar Placeholder="Search title or content..."
+                               Text="{Binding SearchText}"
+                               SearchCommand="{Binding SearchCommand}"
+                               TextColor="{DynamicResource PrimaryText}"
+                               PlaceholderColor="{DynamicResource SecondaryText}"
+                               BackgroundColor="Transparent"/>
+                </Frame>
+
+                <!-- Date Range Filter -->
+                <Frame BackgroundColor="{DynamicResource SecondaryBackground}"
+                       CornerRadius="10"
+                       Padding="15"
+                       HasShadow="False">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="📅 Date Range"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{DynamicResource PrimaryText}"/>
+
+                        <HorizontalStackLayout Spacing="10">
+                            <Label Text="From:"
+                                   VerticalOptions="Center"
+                                   TextColor="{DynamicResource SecondaryText}"/>
+                            <DatePicker Date="{Binding StartDate}"
+                                        Format="MMM dd, yyyy"
+                                        TextColor="{DynamicResource PrimaryText}"
+                                        HorizontalOptions="FillAndExpand"/>
+                        </HorizontalStackLayout>
+
+                        <HorizontalStackLayout Spacing="10">
+                            <Label Text="To:"
+                                   VerticalOptions="Center"
+                                   TextColor="{DynamicResource SecondaryText}"/>
+                            <DatePicker Date="{Binding EndDate}"
+                                        Format="MMM dd, yyyy"
+                                        TextColor="{DynamicResource PrimaryText}"
+                                        HorizontalOptions="FillAndExpand"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Mood Filter -->
+                <Frame BackgroundColor="{DynamicResource SecondaryBackground}"
+                       CornerRadius="10"
+                       Padding="15"
+                       HasShadow="False">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="😊 Filter by Mood"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{DynamicResource PrimaryText}"/>
+
+                        <FlexLayout BindableLayout.ItemsSource="{Binding AllMoods}"
+                                    Wrap="Wrap"
+                                    JustifyContent="Start">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="models:Mood">
+                                    <Frame Padding="8,4"
+                                           Margin="4"
+                                           CornerRadius="12"
+                                           HasShadow="False"
+                                           BackgroundColor="{DynamicResource SecondaryText}">
+                                        <Frame.GestureRecognizers>
+                                            <TapGestureRecognizer 
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SearchViewModel}}, Path=ToggleMoodCommand}"
+                                                CommandParameter="{Binding .}"/>
+                                        </Frame.GestureRecognizers>
+                                        <Label TextColor="{DynamicResource PrimaryBackground}"
+                                               FontSize="11">
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span Text="{Binding Emoji}"/>
+                                                    <Span Text=" "/>
+                                                    <Span Text="{Binding Name}"/>
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+                                    </Frame>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </FlexLayout>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Tag Filter -->
+                <Frame BackgroundColor="{DynamicResource SecondaryBackground}"
+                       CornerRadius="10"
+                       Padding="15"
+                       HasShadow="False">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="🏷️ Filter by Tags"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{DynamicResource PrimaryText}"/>
+
+                        <ScrollView Orientation="Horizontal" HeightRequest="80">
+                            <FlexLayout BindableLayout.ItemsSource="{Binding AllTags}"
+                                        Wrap="Wrap"
+                                        Direction="Row"
+                                        JustifyContent="Start">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="models:Tag">
+                                        <Frame Padding="8,4"
+                                               Margin="4"
+                                               CornerRadius="12"
+                                               HasShadow="False"
+                                               BackgroundColor="{DynamicResource SecondaryText}">
+                                            <Frame.GestureRecognizers>
+                                                <TapGestureRecognizer 
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SearchViewModel}}, Path=ToggleTagCommand}"
+                                                    CommandParameter="{Binding .}"/>
+                                            </Frame.GestureRecognizers>
+                                            <Label Text="{Binding Name}"
+                                                   TextColor="{DynamicResource PrimaryBackground}"
+                                                   FontSize="11"/>
+                                        </Frame>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </FlexLayout>
+                        </ScrollView>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Category Filter -->
+                <Frame BackgroundColor="{DynamicResource SecondaryBackground}"
+                       CornerRadius="10"
+                       Padding="15"
+                       HasShadow="False">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="📁 Filter by Category"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{DynamicResource PrimaryText}"/>
+
+                        <Picker ItemsSource="{Binding AllCategories}"
+                                SelectedItem="{Binding SelectedCategory}"
+                                ItemDisplayBinding="{Binding Name}"
+                                Title="Select category"
+                                FontSize="14"
+                                TextColor="{DynamicResource PrimaryText}"
+                                BackgroundColor="{DynamicResource PrimaryBackground}"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Action Buttons -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                    <Button Grid.Column="0"
+                            Text="🔍 Search"
+                            Command="{Binding SearchCommand}"
+                            BackgroundColor="{DynamicResource AccentColor}"
+                            TextColor="{DynamicResource PrimaryBackground}"
+                            FontSize="14"
+                            FontAttributes="Bold"
+                            CornerRadius="10"
+                            HeightRequest="45"/>
+
+                    <Button Grid.Column="1"
+                            Text="Clear Filters"
+                            Command="{Binding ClearFiltersCommand}"
+                            BackgroundColor="{DynamicResource SecondaryText}"
+                            TextColor="{DynamicResource PrimaryBackground}"
+                            FontSize="14"
+                            FontAttributes="Bold"
+                            CornerRadius="10"
+                            HeightRequest="45"/>
+                </Grid>
+
+                <!-- Result Count -->
+                <Label Text="{Binding ResultCount, StringFormat='Found {0} entries'}"
+                       FontSize="14"
+                       FontAttributes="Bold"
+                       TextColor="{DynamicResource AccentColor}"
+                       HorizontalOptions="Center"/>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Search Results -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20,0,20,20" Spacing="10">
+                <CollectionView ItemsSource="{Binding SearchResults}"
+                                EmptyView="No entries found. Try adjusting your filters.">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:JournalEntry">
+                            <Frame BackgroundColor="{DynamicResource SecondaryBackground}"
+                                   CornerRadius="10"
+                                   Padding="15"
+                                   Margin="0,5"
+                                   HasShadow="True">
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer 
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SearchViewModel}}, Path=ViewEntryCommand}"
+                                        CommandParameter="{Binding .}"/>
+                                </Frame.GestureRecognizers>
+
+                                <VerticalStackLayout Spacing="8">
+                                    <!-- Date and Title -->
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Grid.Column="0"
+                                               Text="{Binding Title}"
+                                               FontSize="16"
+                                               FontAttributes="Bold"
+                                               TextColor="{DynamicResource PrimaryText}"
+                                               LineBreakMode="TailTruncation"/>
+
+                                        <Label Grid.Column="1"
+                                               Text="{Binding Date, StringFormat='{0:MMM dd}'}"
+                                               FontSize="12"
+                                               TextColor="{DynamicResource SecondaryText}"
+                                               VerticalOptions="Center"
+                                               Margin="10,0,0,0"/>
+                                    </Grid>
+
+                                    <!-- Content Preview -->
+                                    <Label Text="{Binding Content}"
+                                           FontSize="12"
+                                           TextColor="{DynamicResource SecondaryText}"
+                                           LineBreakMode="TailTruncation"
+                                           MaxLines="2"/>
+
+                                    <!-- Moods -->
+                                    <HorizontalStackLayout Spacing="5">
+                                        <Label Text="{Binding PrimaryMood.Emoji}"
+                                               FontSize="16"
+                                               IsVisible="{Binding PrimaryMood, Converter={StaticResource IsNotNullConverter}}"/>
+                                        <Label Text="{Binding SecondaryMood1.Emoji}"
+                                               FontSize="14"
+                                               IsVisible="{Binding SecondaryMood1, Converter={StaticResource IsNotNullConverter}}"/>
+                                        <Label Text="{Binding SecondaryMood2.Emoji}"
+                                               FontSize="14"
+                                               IsVisible="{Binding SecondaryMood2, Converter={StaticResource IsNotNullConverter}}"/>
+                                    </HorizontalStackLayout>
+
+                                    <!-- Tags -->
+                                    <FlexLayout BindableLayout.ItemsSource="{Binding Tags}"
+                                                Wrap="Wrap"
+                                                JustifyContent="Start">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate x:DataType="models:Tag">
+                                                <Frame BackgroundColor="{DynamicResource AccentColor}"
+                                                       Padding="6,3"
+                                                       Margin="2"
+                                                       CornerRadius="8"
+                                                       HasShadow="False">
+                                                    <Label Text="{Binding Name}"
+                                                           TextColor="{DynamicResource PrimaryBackground}"
+                                                           FontSize="10"/>
+                                                </Frame>
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </FlexLayout>
+                                </VerticalStackLayout>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

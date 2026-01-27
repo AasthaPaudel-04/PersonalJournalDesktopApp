@@ -1,12 +1,34 @@
 using PersonalJournalDesktopApp.ViewModels;
 
-namespace PersonalJournalDesktopApp.Views;
-
-public partial class EntryDetailPage : ContentPage
+namespace PersonalJournalDesktopApp.Views
 {
-    public EntryDetailPage(EntryDetailViewModel viewModel)
+    [QueryProperty(nameof(Date), "Date")]
+    public partial class EntryDetailPage : ContentPage
     {
-        InitializeComponent();
-        BindingContext = viewModel;
+        private readonly EntryDetailViewModel _viewModel;
+        private DateTime _date;
+
+        public DateTime Date
+        {
+            get => _date;
+            set
+            {
+                _date = value;
+                if (_viewModel != null)
+                {
+                    MainThread.BeginInvokeOnMainThread(async () =>
+                    {
+                        await _viewModel.InitializeAsync(value);
+                    });
+                }
+            }
+        }
+
+        public EntryDetailPage(EntryDetailViewModel viewModel)
+        {
+            InitializeComponent();
+            _viewModel = viewModel;
+            BindingContext = _viewModel;
+        }
     }
 }
