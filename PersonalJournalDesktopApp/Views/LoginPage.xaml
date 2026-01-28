@@ -26,7 +26,7 @@
                Padding="30"
                HasShadow="True">
             <VerticalStackLayout Spacing="20">
-                <Label Text="🔒 Enter PIN"
+                <Label Text= "Enter PIN"
                        FontSize="20"
                        FontAttributes="Bold"
                        TextColor="{DynamicResource PrimaryText}"

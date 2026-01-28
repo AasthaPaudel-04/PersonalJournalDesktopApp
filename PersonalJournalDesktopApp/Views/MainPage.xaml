@@ -6,7 +6,7 @@
              x:Class="PersonalJournalDesktopApp.Views.MainPage"
              x:DataType="vm:MainViewModel"
              BackgroundColor="{DynamicResource PrimaryBackground}">
-    
+
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
 
@@ -137,9 +137,49 @@
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
+
+                    <!-- ============== PAGINATION CONTROLS ============== -->
+                    <Frame BackgroundColor="{DynamicResource PrimaryBackground}"
+                           CornerRadius="10"
+                           Padding="15"
+                           HasShadow="False"
+                           Margin="0,10,0,0">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="15">
+                            <!-- Previous Button -->
+                            <Button Grid.Column="0"
+                                    Text="◀ Previous"
+                                    Command="{Binding PreviousPageCommand}"
+                                    IsEnabled="{Binding HasPreviousPage}"
+                                    BackgroundColor="{DynamicResource AccentColor}"
+                                    TextColor="White"
+                                    FontSize="12"
+                                    Padding="15,8"
+                                    CornerRadius="8"/>
+
+                            <!-- Page Info -->
+                            <Label Grid.Column="1"
+                                   Text="{Binding PageInfo}"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="{DynamicResource PrimaryText}"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"/>
+
+                            <!-- Next Button -->
+                            <Button Grid.Column="2"
+                                    Text="Next ▶"
+                                    Command="{Binding NextPageCommand}"
+                                    IsEnabled="{Binding HasNextPage}"
+                                    BackgroundColor="{DynamicResource AccentColor}"
+                                    TextColor="White"
+                                    FontSize="12"
+                                    Padding="15,8"
+                                    CornerRadius="8"/>
+                        </Grid>
+                    </Frame>
+
                 </VerticalStackLayout>
             </Frame>
-
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

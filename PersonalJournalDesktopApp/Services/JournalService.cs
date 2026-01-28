@@ -20,10 +20,10 @@ namespace PersonalJournalDesktopApp.Services
         // Get today's entry
         public async Task<JournalEntry?> GetTodayEntryAsync()
         {
-            return await _database.GetEntryByDateAsync(DateTime.Today);
+            return await GetEntryByDateAsync(DateTime.Today);
         }
 
-        // Get entry by specific date
+        // Get entry by specific date - FIXED: Now loads EVERYTHING
         public async Task<JournalEntry?> GetEntryByDateAsync(DateTime date)
         {
             var entry = await _database.GetEntryByDateAsync(date);
@@ -39,6 +39,13 @@ namespace PersonalJournalDesktopApp.Services
 
                 if (entry.SecondaryMood2Id.HasValue)
                     entry.SecondaryMood2 = await _database.GetMoodByIdAsync(entry.SecondaryMood2Id.Value);
+
+                // FIXED: Load category
+                if (entry.CategoryId.HasValue)
+                    entry.Category = await _database.GetCategoryByIdAsync(entry.CategoryId.Value);
+
+                // FIXED: Load tags
+                entry.Tags = await _database.GetTagsForEntryAsync(entry.Id);
             }
 
             return entry;
@@ -47,7 +54,30 @@ namespace PersonalJournalDesktopApp.Services
         // Get all entries (for recent entries list)
         public async Task<List<JournalEntry>> GetAllEntriesAsync()
         {
-            return await _database.GetAllEntriesAsync();
+            var entries = await _database.GetAllEntriesAsync();
+
+            // FIXED: Load related data for each entry
+            foreach (var entry in entries)
+            {
+                // Load moods
+                if (entry.PrimaryMoodId.HasValue)
+                    entry.PrimaryMood = await _database.GetMoodByIdAsync(entry.PrimaryMoodId.Value);
+
+                if (entry.SecondaryMood1Id.HasValue)
+                    entry.SecondaryMood1 = await _database.GetMoodByIdAsync(entry.SecondaryMood1Id.Value);
+
+                if (entry.SecondaryMood2Id.HasValue)
+                    entry.SecondaryMood2 = await _database.GetMoodByIdAsync(entry.SecondaryMood2Id.Value);
+
+                // Load category
+                if (entry.CategoryId.HasValue)
+                    entry.Category = await _database.GetCategoryByIdAsync(entry.CategoryId.Value);
+
+                // Load tags
+                entry.Tags = await _database.GetTagsForEntryAsync(entry.Id);
+            }
+
+            return entries;
         }
 
         // Save (Create or Update) entry
@@ -70,4 +100,3 @@ namespace PersonalJournalDesktopApp.Services
         }
     }
 }
-

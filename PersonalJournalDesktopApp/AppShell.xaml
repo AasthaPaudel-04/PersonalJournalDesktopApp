@@ -4,28 +4,77 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:PersonalJournalDesktopApp.Views"
-    FlyoutBackgroundColor="{DynamicResource SecondaryBackground}">
+    Shell.FlyoutBehavior="Disabled">
 
-    <TabBar>
+    <!-- FIXED: Shell visual appearance now respects theme -->
+    <Shell.Resources>
+            <Style TargetType="TabBar">
+                <Setter Property="Shell.BackgroundColor" Value="{DynamicResource SecondaryBackground}" />
+                <Setter Property="Shell.ForegroundColor" Value="{DynamicResource PrimaryText}" />
+                <Setter Property="Shell.UnselectedColor" Value="{DynamicResource SecondaryText}" />
+                <Setter Property="Shell.TitleColor" Value="{DynamicResource PrimaryText}" />
+            </Style>
+
+            <Style TargetType="ShellContent">
+                <Setter Property="Shell.BackgroundColor" Value="{DynamicResource SecondaryBackground}" />
+                <Setter Property="Shell.ForegroundColor" Value="{DynamicResource PrimaryText}" />
+                <Setter Property="Shell.UnselectedColor" Value="{DynamicResource SecondaryText}" />
+                <Setter Property="Shell.TitleColor" Value="{DynamicResource PrimaryText}" />
+            </Style>
+    </Shell.Resources>
+
+    <!-- Tab bar colors -->
+    <TabBar Shell.BackgroundColor="{DynamicResource SecondaryBackground}"
+            Shell.ForegroundColor="{DynamicResource PrimaryText}"
+            Shell.TitleColor="{DynamicResource PrimaryText}">
+
         <ShellContent
             Title="Journal"
             ContentTemplate="{DataTemplate local:MainPage}"
-            Route="MainPage" />
+            Route="MainPage"
+            Shell.BackgroundColor="{DynamicResource SecondaryBackground}"
+            Shell.ForegroundColor="{DynamicResource PrimaryText}"
+            Shell.TitleColor="{DynamicResource PrimaryText}">
+            <ShellContent.Icon>
+                <FontImageSource Glyph="📝" FontFamily="SegoeUIEmoji" Size="24"/>
+            </ShellContent.Icon>
+        </ShellContent>
 
         <ShellContent
             Title="Search"
             ContentTemplate="{DataTemplate local:SearchPage}"
-            Route="SearchPage" />
+            Route="SearchPage"
+            Shell.BackgroundColor="{DynamicResource SecondaryBackground}"
+            Shell.ForegroundColor="{DynamicResource PrimaryText}"
+            Shell.TitleColor="{DynamicResource PrimaryText}">
+            <ShellContent.Icon>
+                <FontImageSource Glyph="🔍" FontFamily="SegoeUIEmoji" Size="24"/>
+            </ShellContent.Icon>
+        </ShellContent>
 
         <ShellContent
             Title="Analytics"
             ContentTemplate="{DataTemplate local:AnalyticsPage}"
-            Route="AnalyticsPage" />
+            Route="AnalyticsPage"
+            Shell.BackgroundColor="{DynamicResource SecondaryBackground}"
+            Shell.ForegroundColor="{DynamicResource PrimaryText}"
+            Shell.TitleColor="{DynamicResource PrimaryText}">
+            <ShellContent.Icon>
+                <FontImageSource Glyph="📊" FontFamily="SegoeUIEmoji" Size="24"/>
+            </ShellContent.Icon>
+        </ShellContent>
 
         <ShellContent
             Title="Security"
             ContentTemplate="{DataTemplate local:SecurityPage}"
-            Route="SecurityPage" />
+            Route="SecurityPage"
+            Shell.BackgroundColor="{DynamicResource SecondaryBackground}"
+            Shell.ForegroundColor="{DynamicResource PrimaryText}"
+            Shell.TitleColor="{DynamicResource PrimaryText}">
+            <ShellContent.Icon>
+                <FontImageSource Glyph="🔒" FontFamily="SegoeUIEmoji" Size="24"/>
+            </ShellContent.Icon>
+        </ShellContent>
     </TabBar>
 
 </Shell>

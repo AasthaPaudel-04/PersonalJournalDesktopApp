@@ -11,16 +11,38 @@
             <converters:IsNotNullConverter x:Key="IsNotNullConverter"/>
             <converters:InvertedBoolConverter x:Key="InvertedBoolConverter"/>
 
-            <!-- Theme Colors -->
-            <Color x:Key="PrimaryBackground">#ead8c2</Color>
-            <Color x:Key="SecondaryBackground">#e3ddc5</Color>
-            <Color x:Key="AccentColor">#ae866c</Color>
-            <Color x:Key="PrimaryText">#543f3f</Color>
-            <Color x:Key="SecondaryText">#765555</Color>
+            <!-- MODERN THEME: White for Light, Black for Dark -->
+            <!-- These colors change dynamically when theme toggles -->
+
+            <!-- Default to Light Theme (White) -->
+            <Color x:Key="PrimaryBackground">#ffffff</Color>
+            <!-- Pure white -->
+            <Color x:Key="SecondaryBackground">#f8f9fa</Color>
+            <!-- Very light gray -->
+            <Color x:Key="AccentColor">#3b82f6</Color>
+            <!-- Blue -->
+            <Color x:Key="PrimaryText">#111827</Color>
+            <!-- Almost black -->
+            <Color x:Key="SecondaryText">#6b7280</Color>
+            <!-- Medium gray -->
+            <Color x:Key="CardBackground">#ffffff</Color>
+            <!-- White cards -->
+            <Color x:Key="BorderColor">#e5e7eb</Color>
+            <!-- Light border -->
 
             <!-- Global Styles -->
             <Style TargetType="ContentPage" ApplyToDerivedTypes="True">
                 <Setter Property="BackgroundColor" Value="{DynamicResource PrimaryBackground}" />
+            </Style>
+
+            <Style TargetType="NavigationPage">
+                <Setter Property="BarBackgroundColor" Value="{DynamicResource SecondaryBackground}" />
+                <Setter Property="BarTextColor" Value="{DynamicResource PrimaryText}" />
+            </Style>
+
+            <!-- Frame Style -->
+            <Style TargetType="Frame">
+                <Setter Property="BorderColor" Value="{DynamicResource BorderColor}" />
             </Style>
         </ResourceDictionary>
     </Application.Resources>

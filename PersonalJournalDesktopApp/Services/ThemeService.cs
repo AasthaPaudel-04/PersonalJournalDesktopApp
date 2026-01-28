@@ -1,56 +1,63 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PersonalJournalDesktopApp.Data;
+﻿using PersonalJournalDesktopApp.Data;
 using PersonalJournalDesktopApp.Models;
 
 namespace PersonalJournalDesktopApp.Services
 {
     public class ThemeService
     {
-        private readonly DatabaseService _database;
-        private const string THEME_KEY = "AppTheme";
+        private readonly DatabaseService _databaseService;
+        private const string ThemeKey = "AppTheme";
 
-        public ThemeService(DatabaseService database)
+        public ThemeService(DatabaseService databaseService)
         {
-            _database = database;
+            _databaseService = databaseService;
         }
 
-        // Get current theme from settings
-        public async Task<Models.AppTheme> GetCurrentThemeAsync()
+        public async Task<ThemeMode> GetCurrentThemeAsync()
         {
-            var themeSetting = await _database.GetSettingAsync(THEME_KEY);
-            var mode = themeSetting == "Dark" ? ThemeMode.Dark : ThemeMode.Light;
-            return new Models.AppTheme { Mode = mode };
+            var themeValue = await _databaseService.GetSettingAsync(ThemeKey);
+            if (Enum.TryParse<ThemeMode>(themeValue, out var theme))
+            {
+                return theme;
+            }
+            return ThemeMode.Light; // Default to light theme
         }
 
-        // Save theme preference
-        public async Task SaveThemeAsync(ThemeMode mode)
+        public async Task SetThemeAsync(ThemeMode theme)
         {
-            await _database.SaveSettingAsync(THEME_KEY, mode.ToString());
+            await _databaseService.SaveSettingAsync(ThemeKey, theme.ToString());
+            ApplyTheme(theme);
         }
 
-        // Toggle between Light and Dark
         public async Task ToggleThemeAsync()
         {
             var currentTheme = await GetCurrentThemeAsync();
-            var newMode = currentTheme.Mode == ThemeMode.Light ? ThemeMode.Dark : ThemeMode.Light;
-            await SaveThemeAsync(newMode);
+            var newTheme = currentTheme == ThemeMode.Light ? ThemeMode.Dark : ThemeMode.Light;
+            await SetThemeAsync(newTheme);
         }
 
-        // Apply theme to app resources
-        public void ApplyTheme(PersonalJournalDesktopApp.Models.AppTheme theme)
+        public void ApplyTheme(ThemeMode theme)
         {
-            var resources = Application.Current!.Resources;
+            var appTheme = new JournalTheme { Mode = theme };
 
-            // Update dynamic colors
-            resources["PrimaryBackground"] = theme.PrimaryBackground;
-            resources["SecondaryBackground"] = theme.SecondaryBackground;
-            resources["AccentColor"] = theme.AccentColor;
-            resources["PrimaryText"] = theme.PrimaryText;
-            resources["SecondaryText"] = theme.SecondaryText;
+            // Update all color resources
+            Application.Current.Resources["PrimaryBackground"] = appTheme.PrimaryBackground;
+            Application.Current.Resources["SecondaryBackground"] = appTheme.SecondaryBackground;
+            Application.Current.Resources["AccentColor"] = appTheme.AccentColor;
+            Application.Current.Resources["PrimaryText"] = appTheme.PrimaryText;
+            Application.Current.Resources["SecondaryText"] = appTheme.SecondaryText;
+            Application.Current.Resources["CardBackground"] = appTheme.CardBackground;
+            Application.Current.Resources["BorderColor"] = appTheme.BorderColor;
+
+            // FIXED: Force Shell to update its colors
+            if (Application.Current?.MainPage is Shell shell)
+            {
+
+                // Update tab bar colors
+                Shell.SetBackgroundColor(shell, appTheme.SecondaryBackground);
+                Shell.SetForegroundColor(shell, appTheme.PrimaryText);
+                Shell.SetTitleColor(shell, appTheme.PrimaryText);
+            }
         }
     }
 }

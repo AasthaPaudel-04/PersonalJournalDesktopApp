@@ -23,6 +23,7 @@ namespace PersonalJournalDesktopApp.Services
         {
             var allEntries = await _journalService.GetAllEntriesAsync();
 
+
             // Filter by date range if provided
             if (startDate.HasValue)
                 allEntries = allEntries.Where(e => e.Date >= startDate.Value).ToList();
@@ -30,22 +31,39 @@ namespace PersonalJournalDesktopApp.Services
             if (endDate.HasValue)
                 allEntries = allEntries.Where(e => e.Date <= endDate.Value).ToList();
 
+
+            // Filter by date range if provided
+            if (startDate.HasValue)
+                allEntries = allEntries.Where(e => e.Date >= startDate.Value).ToList();
+
+            if (endDate.HasValue)
+                allEntries = allEntries.Where(e => e.Date <= endDate.Value).ToList();
+
+            // CRITICAL FIX: Load full entry details including Content and Mood IDs
+            var fullEntries = new List<JournalEntry>();
+            foreach (var entry in allEntries)
+            {
+                var fullEntry = await _journalService.GetEntryByDateAsync(entry.Date);
+                if (fullEntry != null)
+                    fullEntries.Add(fullEntry);
+            }
+
             var analytics = new AnalyticsData
             {
-                TotalEntries = allEntries.Count
+                TotalEntries = fullEntries.Count
             };
 
-            // Calculate streaks
+            // Calculate streaks (can use lightweight entries for better performance)
             CalculateStreaks(allEntries, analytics);
 
-            // Calculate mood analytics
-            await CalculateMoodAnalyticsAsync(allEntries, analytics);
+            // Calculate mood analytics (needs full entries with mood IDs)
+            await CalculateMoodAnalyticsAsync(fullEntries, analytics);
 
-            // Calculate tag analytics
-            await CalculateTagAnalyticsAsync(allEntries, analytics);
+            // Calculate tag analytics (needs full entries with tags)
+            await CalculateTagAnalyticsAsync(fullEntries, analytics);
 
-            // Calculate word count analytics
-            CalculateWordCountAnalytics(allEntries, analytics);
+            // Calculate word count analytics (needs full entries with content)
+            CalculateWordCountAnalytics(fullEntries, analytics);
 
             return analytics;
         }
@@ -226,6 +244,7 @@ namespace PersonalJournalDesktopApp.Services
         {
             if (entries.Any())
             {
+                // WordCount is a computed property that requires Content to be loaded
                 analytics.AverageWordCount = entries.Average(e => e.WordCount);
 
                 analytics.WordCountTrends = entries
@@ -236,6 +255,11 @@ namespace PersonalJournalDesktopApp.Services
                         WordCount = e.WordCount
                     })
                     .ToList();
+            }
+            else
+            {
+                analytics.AverageWordCount = 0;
+                analytics.WordCountTrends = new List<WordCountTrend>();
             }
         }
     }

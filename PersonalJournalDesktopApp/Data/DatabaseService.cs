@@ -217,6 +217,17 @@ namespace PersonalJournalDesktopApp.Data
                     using var reader = command.ExecuteReader();
                     if (reader.Read())
                     {
+                        // FIXED: Proper nullable int handling
+                        int? primaryMoodId = reader.IsDBNull(6) ? null : reader.GetInt32(6);
+                        int? secondaryMood1Id = reader.IsDBNull(7) ? null : reader.GetInt32(7);
+                        int? secondaryMood2Id = reader.IsDBNull(8) ? null : reader.GetInt32(8);
+                        int? categoryId = reader.IsDBNull(9) ? null : reader.GetInt32(9);
+
+                        System.Diagnostics.Debug.WriteLine($"=== DATABASE READ ===");
+                        System.Diagnostics.Debug.WriteLine($"PrimaryMoodId from DB: {primaryMoodId}");
+                        System.Diagnostics.Debug.WriteLine($"CategoryId from DB: {categoryId}");
+                        System.Diagnostics.Debug.WriteLine("=====================");
+
                         return new JournalEntry
                         {
                             Id = reader.GetInt32(0),
@@ -225,10 +236,10 @@ namespace PersonalJournalDesktopApp.Data
                             Content = reader.GetString(3),
                             CreatedAt = DateTime.Parse(reader.GetString(4)),
                             UpdatedAt = DateTime.Parse(reader.GetString(5)),
-                            PrimaryMoodId = GetValueOrDefault<int?>(reader, 6),
-                            SecondaryMood1Id = GetValueOrDefault<int?>(reader, 7),
-                            SecondaryMood2Id = GetValueOrDefault<int?>(reader, 8),
-                            CategoryId = GetValueOrDefault<int?>(reader, 9)
+                            PrimaryMoodId = primaryMoodId,
+                            SecondaryMood1Id = secondaryMood1Id,
+                            SecondaryMood2Id = secondaryMood2Id,
+                            CategoryId = categoryId
                         };
                     }
                     return null;

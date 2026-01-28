@@ -12,6 +12,7 @@ namespace PersonalJournalDesktopApp.Models
         Neutral,
         Negative
     }
+
     public class Mood
     {
         public int Id { get; set; }
@@ -23,26 +24,26 @@ namespace PersonalJournalDesktopApp.Models
         {
             return new List<Mood>
             {
-            // Positive Moods
-            new Mood { Id = 1, Name = "Happy", Category = MoodCategory.Positive, Emoji = "😊" },
-            new Mood { Id = 2, Name = "Excited", Category = MoodCategory.Positive, Emoji = "🤩" },
-            new Mood { Id = 3, Name = "Relaxed", Category = MoodCategory.Positive, Emoji = "😌" },
-            new Mood { Id = 4, Name = "Grateful", Category = MoodCategory.Positive, Emoji = "🙏" },
-            new Mood { Id = 5, Name = "Confident", Category = MoodCategory.Positive, Emoji = "💪" },
-            
-            // Neutral Moods
-            new Mood { Id = 6, Name = "Calm", Category = MoodCategory.Neutral, Emoji = "😐" },
-            new Mood { Id = 7, Name = "Thoughtful", Category = MoodCategory.Neutral, Emoji = "🤔" },
-            new Mood { Id = 8, Name = "Curious", Category = MoodCategory.Neutral, Emoji = "🧐" },
-            new Mood { Id = 9, Name = "Nostalgic", Category = MoodCategory.Neutral, Emoji = "🌅" },
-            new Mood { Id = 10, Name = "Bored", Category = MoodCategory.Neutral, Emoji = "😑" },
-            
-            // Negative Moods
-            new Mood { Id = 11, Name = "Sad", Category = MoodCategory.Negative, Emoji = "😢" },
-            new Mood { Id = 12, Name = "Angry", Category = MoodCategory.Negative, Emoji = "😠" },
-            new Mood { Id = 13, Name = "Stressed", Category = MoodCategory.Negative, Emoji = "😰" },
-            new Mood { Id = 14, Name = "Lonely", Category = MoodCategory.Negative, Emoji = "😔" },
-            new Mood { Id = 15, Name = "Anxious", Category = MoodCategory.Negative, Emoji = "😨" }
+                // Positive Moods - Natural, expressive emojis
+                new Mood { Id = 1, Name = "Happy", Category = MoodCategory.Positive, Emoji = "😄" },
+                new Mood { Id = 2, Name = "Excited", Category = MoodCategory.Positive, Emoji = "🎉" },
+                new Mood { Id = 3, Name = "Relaxed", Category = MoodCategory.Positive, Emoji = "😎" },
+                new Mood { Id = 4, Name = "Grateful", Category = MoodCategory.Positive, Emoji = "🙌" },
+                new Mood { Id = 5, Name = "Confident", Category = MoodCategory.Positive, Emoji = "💪" },
+                
+                // Neutral Moods - Calm, thoughtful
+                new Mood { Id = 6, Name = "Calm", Category = MoodCategory.Neutral, Emoji = "😌" },
+                new Mood { Id = 7, Name = "Thoughtful", Category = MoodCategory.Neutral, Emoji = "🤔" },
+                new Mood { Id = 8, Name = "Curious", Category = MoodCategory.Neutral, Emoji = "👀" },
+                new Mood { Id = 9, Name = "Nostalgic", Category = MoodCategory.Neutral, Emoji = "💭" },
+                new Mood { Id = 10, Name = "Bored", Category = MoodCategory.Neutral, Emoji = "😐" },
+                
+                // Negative Moods - Clear emotional indicators
+                new Mood { Id = 11, Name = "Sad", Category = MoodCategory.Negative, Emoji = "😢" },
+                new Mood { Id = 12, Name = "Angry", Category = MoodCategory.Negative, Emoji = "😤" },
+                new Mood { Id = 13, Name = "Stressed", Category = MoodCategory.Negative, Emoji = "😫" },
+                new Mood { Id = 14, Name = "Lonely", Category = MoodCategory.Negative, Emoji = "💔" },
+                new Mood { Id = 15, Name = "Anxious", Category = MoodCategory.Negative, Emoji = "😰" }
             };
         }
     }

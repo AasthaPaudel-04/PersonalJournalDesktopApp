@@ -1,30 +1,159 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <title>PersonalJournalDesktopApp</title>
-    <base href="/" />
-    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
-    <link rel="stylesheet" href="css/app.css" />
-    <link rel="stylesheet" href="PersonalJournalDesktopApp.styles.css" />
-    <link rel="icon" type="image/png" href="favicon.png" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rich Text Editor</title>
+
+    <!-- Quill CSS -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: white;
+        }
+
+        #editor-container {
+            height: calc(100vh - 42px);
+        }
+
+        .ql-toolbar {
+            border: none !important;
+            border-bottom: 1px solid #e5e7eb !important;
+            background-color: #f8f9fa;
+            padding: 10px 15px !important;
+        }
+
+        .ql-container {
+            border: none !important;
+            font-size: 16px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        .ql-editor {
+            padding: 20px;
+            line-height: 1.6;
+            min-height: 300px;
+        }
+
+            .ql-editor.ql-blank::before {
+                color: #9ca3af;
+                font-style: normal;
+            }
+
+        /* Toolbar button styling */
+        .ql-toolbar button {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+        }
+
+            .ql-toolbar button:hover {
+                background-color: #e5e7eb;
+            }
+
+            .ql-toolbar button.ql-active {
+                background-color: #3b82f6;
+                color: white;
+            }
+
+        .ql-toolbar .ql-stroke {
+            stroke: #374151;
+        }
+
+        .ql-toolbar .ql-fill {
+            fill: #374151;
+        }
+
+        .ql-toolbar button:hover .ql-stroke {
+            stroke: #111827;
+        }
+
+        .ql-toolbar button.ql-active .ql-stroke {
+            stroke: white;
+        }
+
+        .ql-toolbar button.ql-active .ql-fill {
+            fill: white;
+        }
+    </style>
 </head>
-
 <body>
+    <div id="editor-container"></div>
 
-    <div class="status-bar-safe-area"></div>
+    <!-- Quill JS -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
-    <div id="app">Loading...</div>
+    <script>
+        var quill = new Quill('#editor-container', {
+            theme: 'snow',
+            placeholder: 'Start writing your journal entry...',
+            modules: {
+                toolbar: [
+                    // Text formatting
+                    ['bold', 'italic', 'underline', 'strike'],
 
-    <div id="blazor-error-ui">
-        An unhandled error has occurred.
-        <a href="" class="reload">Reload</a>
-        <a class="dismiss">🗙</a>
-    </div>
+                    // Headers
+                    [{ 'header': [1, 2, 3, false] }],
 
-    <script src="_framework/blazor.webview.js" autostart="false"></script>
+                    // Lists
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
 
+                    // Indentation
+                    [{ 'indent': '-1'}, { 'indent': '+1' }],
+
+                    // Text color and background
+                    [{ 'color': [] }, { 'background': [] }],
+
+                    // Text alignment
+                    [{ 'align': [] }],
+
+                    // Code block and blockquote
+                    ['blockquote', 'code-block'],
+
+                    // Clear formatting
+                    ['clean']
+                ]
+            }
+        });
+
+        // Function to get content (called from C#)
+        function getContent() {
+            return quill.root.innerHTML;
+        }
+
+        // Function to set content (called from C#)
+        function setContent(html) {
+            quill.root.innerHTML = html;
+        }
+
+        // Function to get plain text
+        function getPlainText() {
+            return quill.getText();
+        }
+
+        // Listen for text changes and notify C#
+        quill.on('text-change', function(delta, oldDelta, source) {
+            if (source === 'user') {
+                // Notify MAUI that content changed
+                if (window.chrome && window.chrome.webview) {
+                    window.chrome.webview.postMessage({
+                        type: 'contentChanged',
+                        content: getContent()
+                    });
+                }
+            }
+        });
+
+        // Make functions available globally
+        window.quillEditor = {
+            getContent: getContent,
+            setContent: setContent,
+            getPlainText: getPlainText
+        };
+    </script>
 </body>
-
 </html>

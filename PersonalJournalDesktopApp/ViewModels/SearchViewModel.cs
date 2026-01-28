@@ -22,10 +22,16 @@ namespace PersonalJournalDesktopApp.ViewModels
         private string searchText = string.Empty;
 
         [ObservableProperty]
-        private DateTime? startDate;
+        private DateTime startDate = DateTime.Today.AddMonths(-1);
 
         [ObservableProperty]
-        private DateTime? endDate;
+        private DateTime endDate = DateTime.Today;
+
+        [ObservableProperty]
+        private bool useStartDate = false;
+
+        [ObservableProperty]
+        private bool useEndDate = false;
 
         [ObservableProperty]
         private ObservableCollection<JournalEntry> searchResults = new();
@@ -96,10 +102,14 @@ namespace PersonalJournalDesktopApp.ViewModels
                 var moodIds = SelectedMoods.Select(m => m.Id).ToList();
                 var tagIds = SelectedTags.Select(t => t.Id).ToList();
 
+                // Only pass dates if checkboxes are checked
+                DateTime? searchStartDate = UseStartDate ? StartDate : null;
+                DateTime? searchEndDate = UseEndDate ? EndDate : null;
+
                 var results = await _searchService.SearchAsync(
                     string.IsNullOrWhiteSpace(SearchText) ? null : SearchText,
-                    StartDate,
-                    EndDate,
+                    searchStartDate,
+                    searchEndDate,
                     moodIds.Any() ? moodIds : null,
                     tagIds.Any() ? tagIds : null,
                     SelectedCategory?.Id
@@ -118,8 +128,10 @@ namespace PersonalJournalDesktopApp.ViewModels
         private async Task ClearFiltersAsync()
         {
             SearchText = string.Empty;
-            StartDate = null;
-            EndDate = null;
+            StartDate = DateTime.Today.AddMonths(-1);
+            EndDate = DateTime.Today;
+            UseStartDate = false;
+            UseEndDate = false;
             SelectedMoods.Clear();
             SelectedTags.Clear();
             SelectedCategory = null;

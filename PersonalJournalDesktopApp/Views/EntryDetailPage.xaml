@@ -25,20 +25,15 @@
                        Margin="10"/>
             </Frame>
 
-            <!-- ============== JOURNAL ENTRY: CONTENT ============== -->
+            <!-- ============== JOURNAL ENTRY: RICH TEXT CONTENT ============== -->
             <Frame BackgroundColor="{DynamicResource SecondaryBackground}"
                    CornerRadius="10"
                    Padding="0"
                    HasShadow="False">
-                <Editor Placeholder="Write your thoughts here..."
-                        Text="{Binding Content}"
-                        FontSize="16"
-                        TextColor="{DynamicResource PrimaryText}"
-                        PlaceholderColor="{DynamicResource SecondaryText}"
-                        BackgroundColor="Transparent"
-                        HeightRequest="200"
-                        AutoSize="TextChanges"
-                        Margin="10"/>
+                <WebView x:Name="EditorWebView"
+                         HeightRequest="400"
+                         HorizontalOptions="FillAndExpand"
+                         VerticalOptions="FillAndExpand"/>
             </Frame>
 
             <!-- ============== CATEGORY SELECTION ============== -->

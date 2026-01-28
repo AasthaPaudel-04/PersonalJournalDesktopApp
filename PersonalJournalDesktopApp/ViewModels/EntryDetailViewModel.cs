@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PersonalJournalDesktopApp.Models;
@@ -18,6 +16,8 @@ namespace PersonalJournalDesktopApp.ViewModels
         private readonly MoodService _moodService;
         private readonly TagService _tagService;
         private readonly CategoryService _categoryService;
+
+        public event EventHandler? SaveRequested;
 
         [ObservableProperty]
         private string title = string.Empty;
@@ -79,11 +79,11 @@ namespace PersonalJournalDesktopApp.ViewModels
         {
             SelectedDate = date;
 
-            // Load moods
+            // Load moods FIRST
             var moods = await _moodService.GetAllMoodsAsync();
             AllMoods = new ObservableCollection<Mood>(moods);
 
-            // Load categories
+            // Load categories FIRST
             var categories = await _categoryService.GetAllCategoriesAsync();
             AllCategories = new ObservableCollection<Category>(categories);
 
@@ -102,23 +102,43 @@ namespace PersonalJournalDesktopApp.ViewModels
                 IsNewEntry = false;
                 PageTitle = $"Edit Entry - {date:MMM dd, yyyy}";
 
-                // Set moods
+                // FIXED: Use the SAME objects from AllMoods collection
+                // This ensures Picker recognizes them
                 if (entry.PrimaryMoodId.HasValue)
+                {
                     SelectedPrimaryMood = AllMoods.FirstOrDefault(m => m.Id == entry.PrimaryMoodId.Value);
+                    System.Diagnostics.Debug.WriteLine($"Loading Primary Mood: {SelectedPrimaryMood?.Name ?? "NULL"}");
+                }
 
                 if (entry.SecondaryMood1Id.HasValue)
+                {
                     SelectedSecondaryMood1 = AllMoods.FirstOrDefault(m => m.Id == entry.SecondaryMood1Id.Value);
+                    System.Diagnostics.Debug.WriteLine($"Loading Secondary Mood 1: {SelectedSecondaryMood1?.Name ?? "NULL"}");
+                }
 
                 if (entry.SecondaryMood2Id.HasValue)
+                {
                     SelectedSecondaryMood2 = AllMoods.FirstOrDefault(m => m.Id == entry.SecondaryMood2Id.Value);
+                    System.Diagnostics.Debug.WriteLine($"Loading Secondary Mood 2: {SelectedSecondaryMood2?.Name ?? "NULL"}");
+                }
 
-                // Set category
+                // FIXED: Use the SAME objects from AllCategories collection
                 if (entry.CategoryId.HasValue)
+                {
                     SelectedCategory = AllCategories.FirstOrDefault(c => c.Id == entry.CategoryId.Value);
+                    System.Diagnostics.Debug.WriteLine($"Loading Category: {SelectedCategory?.Name ?? "NULL"}");
+                }
 
                 // Load entry tags
-                var entryTags = await _tagService.GetTagsForEntryAsync(entry.Id);
-                SelectedTags = new ObservableCollection<Tag>(entryTags);
+                SelectedTags = new ObservableCollection<Tag>(entry.Tags);
+
+                System.Diagnostics.Debug.WriteLine($"=== LOADED ENTRY ===");
+                System.Diagnostics.Debug.WriteLine($"Entry ID: {entry.Id}");
+                System.Diagnostics.Debug.WriteLine($"PrimaryMoodId in DB: {entry.PrimaryMoodId}");
+                System.Diagnostics.Debug.WriteLine($"CategoryId in DB: {entry.CategoryId}");
+                System.Diagnostics.Debug.WriteLine($"Selected Primary Mood: {SelectedPrimaryMood?.Id} - {SelectedPrimaryMood?.Name}");
+                System.Diagnostics.Debug.WriteLine($"Selected Category: {SelectedCategory?.Id} - {SelectedCategory?.Name}");
+                System.Diagnostics.Debug.WriteLine("====================");
             }
             else
             {
@@ -137,23 +157,46 @@ namespace PersonalJournalDesktopApp.ViewModels
                 return;
             }
 
+            // Raise event so page can get WebView content first
+            SaveRequested?.Invoke(this, EventArgs.Empty);
+
+            // Small delay to ensure content is retrieved
+            await Task.Delay(100);
+
+            // Debug output to verify what we're about to save
+            System.Diagnostics.Debug.WriteLine($"=== SAVING ENTRY ===");
+            System.Diagnostics.Debug.WriteLine($"Title: {Title}");
+            System.Diagnostics.Debug.WriteLine($"Content Length: {Content?.Length ?? 0}");
+            System.Diagnostics.Debug.WriteLine($"Primary Mood Selected: {SelectedPrimaryMood?.Name ?? "NULL"} (ID: {SelectedPrimaryMood?.Id})");
+            System.Diagnostics.Debug.WriteLine($"Secondary Mood 1: {SelectedSecondaryMood1?.Name ?? "NULL"} (ID: {SelectedSecondaryMood1?.Id})");
+            System.Diagnostics.Debug.WriteLine($"Secondary Mood 2: {SelectedSecondaryMood2?.Name ?? "NULL"} (ID: {SelectedSecondaryMood2?.Id})");
+            System.Diagnostics.Debug.WriteLine($"Category Selected: {SelectedCategory?.Name ?? "NULL"} (ID: {SelectedCategory?.Id})");
+            System.Diagnostics.Debug.WriteLine($"Tags Count: {SelectedTags.Count}");
+
             var entry = new JournalEntry
             {
                 Id = _entryId,
                 Date = SelectedDate,
                 Title = Title,
-                Content = Content,
+                Content = Content ?? string.Empty,
                 PrimaryMoodId = SelectedPrimaryMood?.Id,
                 SecondaryMood1Id = SelectedSecondaryMood1?.Id,
                 SecondaryMood2Id = SelectedSecondaryMood2?.Id,
                 CategoryId = SelectedCategory?.Id
             };
 
+            System.Diagnostics.Debug.WriteLine($"Entry object - PrimaryMoodId: {entry.PrimaryMoodId}, CategoryId: {entry.CategoryId}");
+
             var savedEntryId = await _journalService.SaveEntryAsync(entry);
+
+            System.Diagnostics.Debug.WriteLine($"Entry saved with ID: {savedEntryId}");
 
             // Save tags
             var tagIds = SelectedTags.Select(t => t.Id).ToList();
             await _tagService.SaveEntryTagsAsync(savedEntryId, tagIds);
+
+            System.Diagnostics.Debug.WriteLine($"Tags saved: {string.Join(", ", SelectedTags.Select(t => t.Name))}");
+            System.Diagnostics.Debug.WriteLine("===================");
 
             await Shell.Current.GoToAsync("..");
         }

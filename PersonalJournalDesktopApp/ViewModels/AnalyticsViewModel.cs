@@ -61,6 +61,10 @@ namespace PersonalJournalDesktopApp.ViewModels
         [ObservableProperty]
         private double averageWordCount;
 
+        // Word count trends
+        [ObservableProperty]
+        private ObservableCollection<WordCountTrendDisplay> wordCountTrends = new();
+
         public AnalyticsViewModel(
             AnalyticsService analyticsService,
             ExportService exportService,
@@ -102,11 +106,57 @@ namespace PersonalJournalDesktopApp.ViewModels
                 TopTags = new ObservableCollection<TagStatistic>(AnalyticsData.MostUsedTags);
 
                 AverageWordCount = AnalyticsData.AverageWordCount;
+
+                // Load word count trends with bar heights
+                LoadWordCountTrends();
             }
             finally
             {
                 IsLoading = false;
             }
+        }
+
+        private void LoadWordCountTrends()
+        {
+            if (AnalyticsData?.WordCountTrends == null || !AnalyticsData.WordCountTrends.Any())
+            {
+                WordCountTrends = new ObservableCollection<WordCountTrendDisplay>();
+                return;
+            }
+
+            // Get last 30 days
+            var trends = AnalyticsData.WordCountTrends
+                .OrderByDescending(t => t.Date)
+                .Take(30)
+                .OrderBy(t => t.Date)
+                .ToList();
+
+            // Find max word count for scaling
+            var maxWordCount = trends.Any() ? trends.Max(t => t.WordCount) : 100;
+            if (maxWordCount == 0) maxWordCount = 100; // Avoid division by zero
+
+            // Convert to display models with bar heights
+            var displayTrends = trends.Select(t => new WordCountTrendDisplay
+            {
+                Date = t.Date,
+                WordCount = t.WordCount,
+                BarHeight = CalculateBarHeight(t.WordCount, maxWordCount),
+                DateLabel = t.Date.ToString("dd")
+            }).ToList();
+
+            WordCountTrends = new ObservableCollection<WordCountTrendDisplay>(displayTrends);
+        }
+
+        private double CalculateBarHeight(int wordCount, int maxWordCount)
+        {
+            // Scale to 10-100 pixels
+            const double minHeight = 10;
+            const double maxHeight = 100;
+
+            if (wordCount == 0) return minHeight;
+
+            var percentage = (double)wordCount / maxWordCount;
+            return minHeight + (percentage * (maxHeight - minHeight));
         }
 
         [RelayCommand]
@@ -186,5 +236,14 @@ namespace PersonalJournalDesktopApp.ViewModels
             FilterEndDate = DateTime.Today;
             await LoadAnalyticsAsync();
         }
+    }
+
+    // Helper class for displaying word count trends with bar heights
+    public class WordCountTrendDisplay
+    {
+        public DateTime Date { get; set; }
+        public int WordCount { get; set; }
+        public double BarHeight { get; set; }
+        public string DateLabel { get; set; } = string.Empty;
     }
 }

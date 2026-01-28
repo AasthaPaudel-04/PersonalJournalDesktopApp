@@ -22,50 +22,52 @@
                            FontAttributes="Bold"
                            TextColor="{DynamicResource PrimaryText}"/>
 
-                    <HorizontalStackLayout Spacing="10">
+                    <FlexLayout Wrap="Wrap" JustifyContent="Start" AlignItems="Start">
                         <Button Text="Last 30 Days"
                                 Command="{Binding SetLast30DaysCommand}"
                                 BackgroundColor="{DynamicResource AccentColor}"
-                                TextColor="{DynamicResource PrimaryBackground}"
+                                TextColor="White"
                                 FontSize="12"
-                                Padding="10,5"
+                                Padding="12,8"
+                                Margin="5"
                                 CornerRadius="8"/>
 
                         <Button Text="Last 90 Days"
                                 Command="{Binding SetLast90DaysCommand}"
                                 BackgroundColor="{DynamicResource AccentColor}"
-                                TextColor="{DynamicResource PrimaryBackground}"
+                                TextColor="White"
                                 FontSize="12"
-                                Padding="10,5"
+                                Padding="12,8"
+                                Margin="5"
                                 CornerRadius="8"/>
 
                         <Button Text="This Year"
                                 Command="{Binding SetThisYearCommand}"
                                 BackgroundColor="{DynamicResource AccentColor}"
-                                TextColor="{DynamicResource PrimaryBackground}"
+                                TextColor="White"
                                 FontSize="12"
-                                Padding="10,5"
+                                Padding="12,8"
+                                Margin="5"
                                 CornerRadius="8"/>
-                    </HorizontalStackLayout>
 
-                    <HorizontalStackLayout Spacing="10">
                         <Button Text="Clear Filter"
                                 Command="{Binding ClearDateFilterCommand}"
                                 BackgroundColor="{DynamicResource SecondaryText}"
-                                TextColor="{DynamicResource PrimaryBackground}"
+                                TextColor="White"
                                 FontSize="12"
-                                Padding="10,5"
+                                Padding="12,8"
+                                Margin="5"
                                 CornerRadius="8"/>
 
                         <Button Text="📄 Export PDF"
                                 Command="{Binding ExportToPdfCommand}"
                                 BackgroundColor="#8b7355"
-                                TextColor="{DynamicResource PrimaryBackground}"
+                                TextColor="White"
                                 FontSize="12"
-                                Padding="10,5"
-                                CornerRadius="8"
-                                HorizontalOptions="EndAndExpand"/>
-                    </HorizontalStackLayout>
+                                Padding="12,8"
+                                Margin="5"
+                                CornerRadius="8"/>
+                    </FlexLayout>
                 </VerticalStackLayout>
             </Frame>
 
@@ -86,7 +88,8 @@
                                BackgroundColor="{DynamicResource PrimaryBackground}"
                                Padding="15"
                                CornerRadius="10"
-                               HasShadow="False">
+                               HasShadow="False"
+                               BorderColor="{DynamicResource BorderColor}">
                             <VerticalStackLayout Spacing="5">
                                 <Label Text="Current Streak"
                                        FontSize="12"
@@ -109,7 +112,8 @@
                                BackgroundColor="{DynamicResource PrimaryBackground}"
                                Padding="15"
                                CornerRadius="10"
-                               HasShadow="False">
+                               HasShadow="False"
+                               BorderColor="{DynamicResource BorderColor}">
                             <VerticalStackLayout Spacing="5">
                                 <Label Text="Longest Streak"
                                        FontSize="12"
@@ -132,7 +136,8 @@
                                BackgroundColor="{DynamicResource PrimaryBackground}"
                                Padding="15"
                                CornerRadius="10"
-                               HasShadow="False">
+                               HasShadow="False"
+                               BorderColor="{DynamicResource BorderColor}">
                             <VerticalStackLayout Spacing="5">
                                 <Label Text="Total Entries"
                                        FontSize="12"
@@ -155,7 +160,8 @@
                                BackgroundColor="{DynamicResource PrimaryBackground}"
                                Padding="15"
                                CornerRadius="10"
-                               HasShadow="False">
+                               HasShadow="False"
+                               BorderColor="{DynamicResource BorderColor}">
                             <VerticalStackLayout Spacing="5">
                                 <Label Text="Missed Days"
                                        FontSize="12"
@@ -191,7 +197,8 @@
                     <Frame BackgroundColor="{DynamicResource PrimaryBackground}"
                            Padding="15"
                            CornerRadius="10"
-                           HasShadow="False">
+                           HasShadow="False"
+                           BorderColor="{DynamicResource BorderColor}">
                         <VerticalStackLayout Spacing="5">
                             <Label Text="Most Frequent Mood"
                                    FontSize="12"
@@ -200,18 +207,84 @@
                             <Label Text="{Binding MostFrequentMoodDisplay}"
                                    FontSize="24"
                                    FontAttributes="Bold"
-                                   TextColor="{DynamicResource AccentColor}"
+                                   TextColor="{DynamicResource PrimaryText}"
                                    HorizontalOptions="Center"/>
                         </VerticalStackLayout>
                     </Frame>
 
-                    <!-- Mood Distribution -->
+                    <!-- Simple Mood Pie Chart (No External Library) -->
                     <Label Text="Mood Distribution"
                            FontSize="14"
                            FontAttributes="Bold"
-                           TextColor="{DynamicResource SecondaryText}"/>
+                           TextColor="{DynamicResource PrimaryText}"
+                           Margin="0,10,0,5"/>
 
-                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                    <!-- Visual Pie Chart using BoxViews -->
+                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" RowSpacing="10" ColumnSpacing="10">
+                        <!-- Donut Chart Visualization -->
+                        <Grid Grid.Row="0" Grid.ColumnSpan="2" WidthRequest="200" HeightRequest="200" HorizontalOptions="Center">
+                            <!-- Background Circle -->
+                            <Ellipse Fill="{DynamicResource SecondaryBackground}"
+                                     WidthRequest="200"
+                                     HeightRequest="200"/>
+
+                            <!-- Segments using Borders and BoxViews for simple representation -->
+                            <Grid>
+                                <!-- Positive Segment (Top) -->
+                                <BoxView Color="#4CAF50"
+                                         WidthRequest="{Binding PositivePercentage, Converter={StaticResource PercentageToWidthConverter}}"
+                                         HeightRequest="10"
+                                         HorizontalOptions="Center"
+                                         VerticalOptions="Start"
+                                         Margin="0,40,0,0"/>
+
+                                <!-- Neutral Segment (Middle) -->
+                                <BoxView Color="#FF9800"
+                                         WidthRequest="{Binding NeutralPercentage, Converter={StaticResource PercentageToWidthConverter}}"
+                                         HeightRequest="10"
+                                         HorizontalOptions="Center"
+                                         VerticalOptions="Center"/>
+
+                                <!-- Negative Segment (Bottom) -->
+                                <BoxView Color="#F44336"
+                                         WidthRequest="{Binding NegativePercentage, Converter={StaticResource PercentageToWidthConverter}}"
+                                         HeightRequest="10"
+                                         HorizontalOptions="Center"
+                                         VerticalOptions="End"
+                                         Margin="0,0,0,40"/>
+                            </Grid>
+                        </Grid>
+
+                        <!-- Legend -->
+                        <VerticalStackLayout Grid.Row="1" Grid.ColumnSpan="2" Spacing="5" HorizontalOptions="Center">
+                            <HorizontalStackLayout Spacing="10">
+                                <BoxView Color="#4CAF50" WidthRequest="20" HeightRequest="20" CornerRadius="3"/>
+                                <Label Text="{Binding PositivePercentage, StringFormat='Positive: {0:F1}%'}"
+                                       FontSize="12"
+                                       TextColor="{DynamicResource PrimaryText}"
+                                       VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+
+                            <HorizontalStackLayout Spacing="10">
+                                <BoxView Color="#FF9800" WidthRequest="20" HeightRequest="20" CornerRadius="3"/>
+                                <Label Text="{Binding NeutralPercentage, StringFormat='Neutral: {0:F1}%'}"
+                                       FontSize="12"
+                                       TextColor="{DynamicResource PrimaryText}"
+                                       VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+
+                            <HorizontalStackLayout Spacing="10">
+                                <BoxView Color="#F44336" WidthRequest="20" HeightRequest="20" CornerRadius="3"/>
+                                <Label Text="{Binding NegativePercentage, StringFormat='Negative: {0:F1}%'}"
+                                       FontSize="12"
+                                       TextColor="{DynamicResource PrimaryText}"
+                                       VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <!-- Traditional Distribution Boxes -->
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10" Margin="0,10,0,0">
                         <!-- Positive -->
                         <Frame Grid.Column="0"
                                BackgroundColor="#4CAF50"
@@ -272,6 +345,83 @@
                 </VerticalStackLayout>
             </Frame>
 
+            <!-- Word Count Trends -->
+            <Frame BackgroundColor="{DynamicResource SecondaryBackground}"
+                   CornerRadius="15"
+                   Padding="20"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="📈 Word Count Trends (Last 30 Days)"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="{DynamicResource PrimaryText}"/>
+
+                    <!-- Bar Chart -->
+                    <ScrollView Orientation="Horizontal" HeightRequest="140">
+                        <HorizontalStackLayout Spacing="5"
+                                               BindableLayout.ItemsSource="{Binding WordCountTrends}"
+                                               Padding="10,0">
+                            <BindableLayout.EmptyView>
+                                <Label Text="No word count data available yet"
+                                       FontSize="14"
+                                       TextColor="{DynamicResource SecondaryText}"
+                                       HorizontalOptions="Center"
+                                       Margin="20"/>
+                            </BindableLayout.EmptyView>
+
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="vm:WordCountTrendDisplay">
+                                    <VerticalStackLayout Spacing="3" WidthRequest="40">
+                                        <!-- Word count label -->
+                                        <Label Text="{Binding WordCount}"
+                                               FontSize="9"
+                                               TextColor="{DynamicResource SecondaryText}"
+                                               HorizontalOptions="Center"/>
+
+                                        <!-- Bar visualization -->
+                                        <BoxView Color="{DynamicResource AccentColor}"
+                                                 HeightRequest="{Binding BarHeight}"
+                                                 WidthRequest="30"
+                                                 CornerRadius="3"
+                                                 VerticalOptions="End"/>
+
+                                        <!-- Date label -->
+                                        <Label Text="{Binding DateLabel}"
+                                               FontSize="9"
+                                               TextColor="{DynamicResource SecondaryText}"
+                                               HorizontalOptions="Center"/>
+                                    </VerticalStackLayout>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </HorizontalStackLayout>
+                    </ScrollView>
+
+                    <!-- Average Word Count -->
+                    <Frame BackgroundColor="{DynamicResource PrimaryBackground}"
+                           Padding="15"
+                           CornerRadius="10"
+                           HasShadow="False"
+                           BorderColor="{DynamicResource BorderColor}"
+                           Margin="0,10,0,0">
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="Average Word Count"
+                                   FontSize="12"
+                                   TextColor="{DynamicResource SecondaryText}"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="{Binding AverageWordCount, StringFormat='{0:F0}'}"
+                                   FontSize="32"
+                                   FontAttributes="Bold"
+                                   TextColor="{DynamicResource AccentColor}"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="words per entry"
+                                   FontSize="12"
+                                   TextColor="{DynamicResource SecondaryText}"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                </VerticalStackLayout>
+            </Frame>
+
             <!-- Tag Analytics -->
             <Frame BackgroundColor="{DynamicResource SecondaryBackground}"
                    CornerRadius="15"
@@ -283,15 +433,23 @@
                            FontAttributes="Bold"
                            TextColor="{DynamicResource PrimaryText}"/>
 
-                    <CollectionView ItemsSource="{Binding TopTags}"
-                                    EmptyView="No tag data available">
-                        <CollectionView.ItemTemplate>
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding TopTags}" Spacing="8">
+                        <BindableLayout.EmptyView>
+                            <Label Text="No tag data available yet. Create entries with tags to see analytics!"
+                                   FontSize="14"
+                                   TextColor="{DynamicResource SecondaryText}"
+                                   HorizontalTextAlignment="Center"
+                                   Margin="0,10"/>
+                        </BindableLayout.EmptyView>
+
+                        <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="models:TagStatistic">
                                 <Frame BackgroundColor="{DynamicResource PrimaryBackground}"
                                        Padding="12"
-                                       Margin="0,5"
+                                       Margin="0"
                                        CornerRadius="8"
-                                       HasShadow="False">
+                                       HasShadow="False"
+                                       BorderColor="{DynamicResource BorderColor}">
                                     <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
                                         <Label Grid.Column="0"
                                                Text="{Binding TagName}"
@@ -319,42 +477,8 @@
                                     </Grid>
                                 </Frame>
                             </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </VerticalStackLayout>
-            </Frame>
-
-            <!-- Word Count Analytics -->
-            <Frame BackgroundColor="{DynamicResource SecondaryBackground}"
-                   CornerRadius="15"
-                   Padding="20"
-                   HasShadow="True">
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="📝 Writing Statistics"
-                           FontSize="18"
-                           FontAttributes="Bold"
-                           TextColor="{DynamicResource PrimaryText}"/>
-
-                    <Frame BackgroundColor="{DynamicResource PrimaryBackground}"
-                           Padding="15"
-                           CornerRadius="10"
-                           HasShadow="False">
-                        <VerticalStackLayout Spacing="5">
-                            <Label Text="Average Word Count"
-                                   FontSize="12"
-                                   TextColor="{DynamicResource SecondaryText}"
-                                   HorizontalOptions="Center"/>
-                            <Label Text="{Binding AverageWordCount, StringFormat='{0:F0}'}"
-                                   FontSize="32"
-                                   FontAttributes="Bold"
-                                   TextColor="{DynamicResource AccentColor}"
-                                   HorizontalOptions="Center"/>
-                            <Label Text="words per entry"
-                                   FontSize="12"
-                                   TextColor="{DynamicResource SecondaryText}"
-                                   HorizontalOptions="Center"/>
-                        </VerticalStackLayout>
-                    </Frame>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
                 </VerticalStackLayout>
             </Frame>
 
